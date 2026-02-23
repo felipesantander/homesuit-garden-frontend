@@ -54,6 +54,27 @@ class DashboardView extends ConsumerWidget {
                   ),
                   Row(
                     children: [
+                      ElevatedButton.icon(
+                        onPressed: () => context.push('/dashboard/add-sensor'),
+                        icon: const Icon(Icons.add_task_rounded, size: 18),
+                        label: const Text(
+                          'NUEVO SENSOR',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          elevation: 0,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
                       IconButton(
                         icon: const Icon(
                           Icons.refresh,

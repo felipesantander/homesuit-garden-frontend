@@ -55,11 +55,33 @@ class DashboardCard extends StatelessWidget {
                   backgroundColor ?? AppColors.surface.withValues(alpha: 0.7),
               borderRadius: BorderRadius.circular(borderRadius),
               border: Border.all(
-                color: borderColor ?? Colors.white.withValues(alpha: 0.2),
+                color: borderColor ?? Colors.white.withValues(alpha: 0.25),
                 width: borderWidth ?? 1.5,
               ),
             ),
-            child: child,
+            child: Stack(
+              children: [
+                // Subtle reflection shine
+                Positioned(
+                  top: -50,
+                  left: -50,
+                  child: Container(
+                    width: 150,
+                    height: 150,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: RadialGradient(
+                        colors: [
+                          Colors.white.withValues(alpha: 0.1),
+                          Colors.white.withValues(alpha: 0.0),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                child,
+              ],
+            ),
           ),
         ),
       ),

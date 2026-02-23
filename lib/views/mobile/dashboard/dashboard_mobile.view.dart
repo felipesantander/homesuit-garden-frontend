@@ -48,6 +48,11 @@ class DashboardMobileView extends ConsumerWidget {
           error: (err, stack) => _ErrorState(error: err),
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => context.push('/dashboard/add-sensor'),
+        backgroundColor: AppColors.primary,
+        child: const Icon(Icons.add_task_rounded, color: Colors.white),
+      ),
     );
   }
 }

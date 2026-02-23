@@ -31,6 +31,9 @@ import '../views/roles_permissions/roles_permissions.view.dart'
 import '../views/roles_permissions/permission_form/permission_form.view.dart'
     deferred as permission_form
     show PermissionFormView;
+import '../views/dashboard/add_sensor/add_sensor.view.dart'
+    deferred as add_sensor
+    show AddSensorView;
 import '../providers/auth.provider.dart';
 import '../utils/deferred_widget.dart';
 
@@ -143,6 +146,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                     permission_form.PermissionFormView(permissionId: id),
               );
             },
+          ),
+          GoRoute(
+            path: '/dashboard/add-sensor',
+            builder: (context, state) => DeferredWidget(
+              loader: add_sensor.loadLibrary,
+              builder: () => add_sensor.AddSensorView(),
+            ),
           ),
         ],
       ),

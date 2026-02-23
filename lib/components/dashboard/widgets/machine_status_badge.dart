@@ -72,26 +72,47 @@ class _MachineStatusBadgeState extends State<MachineStatusBadge>
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            AnimatedBuilder(
-              animation: _controller,
-              builder: (context, child) {
-                return Container(
-                  width: 8,
-                  height: 8,
-                  decoration: BoxDecoration(
-                    color: statusColor,
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      if (widget.isOnline)
-                        BoxShadow(
-                          color: statusColor.withValues(alpha: 0.4),
-                          blurRadius: 4 + (_controller.value * 6),
-                          spreadRadius: _controller.value * 2,
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                if (widget.isOnline)
+                  AnimatedBuilder(
+                    animation: _controller,
+                    builder: (context, child) {
+                      return Container(
+                        width: 12 + (_controller.value * 12),
+                        height: 12 + (_controller.value * 12),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: statusColor.withValues(
+                            alpha: 0.2 * (1 - _controller.value),
+                          ),
                         ),
-                    ],
+                      );
+                    },
                   ),
-                );
-              },
+                AnimatedBuilder(
+                  animation: _controller,
+                  builder: (context, child) {
+                    return Container(
+                      width: 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        color: statusColor,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          if (widget.isOnline)
+                            BoxShadow(
+                              color: statusColor.withValues(alpha: 0.6),
+                              blurRadius: 4 + (_controller.value * 4),
+                              spreadRadius: _controller.value * 1,
+                            ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ],
             ),
             const SizedBox(width: 8),
             Text(

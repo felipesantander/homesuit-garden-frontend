@@ -96,50 +96,53 @@ class MachineDetailsView extends ConsumerWidget {
       }
     }
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Detalles de Sensor'),
-        backgroundColor: AppColors.surface,
-        leading: BackButton(onPressed: () => context.pop()),
-        centerTitle: false,
-      ),
-      backgroundColor: Colors.transparent,
-      body: Container(
-        decoration: const BoxDecoration(gradient: AppColors.backgroundGradient),
-        child: SingleChildScrollView(
+    return Container(
+      decoration: const BoxDecoration(gradient: AppColors.backgroundGradient),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          title: const Text('Detalles de Sensor'),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          leading: BackButton(onPressed: () => context.pop()),
+          centerTitle: false,
+        ),
+        body: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header Row
+              // Header with machine details
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        machine.name,
-                        style: const TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimary,
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          machine.name,
+                          style: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'SN: ${machine.serial.toUpperCase()}',
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: AppColors.textSecondary,
-                          letterSpacing: 1.1,
+                        const SizedBox(height: 4),
+                        Text(
+                          'SN: ${machine.serial.toUpperCase()}',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: AppColors.textSecondary,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                  const Spacer(),
                   MachineStatusBadge(
                     isOnline: isOnline,
-                    relativeTime: latestCaptureStr ?? 'No info',
+                    relativeTime: latestCaptureStr ?? 'Nunca',
+                    fullTimestamp: latestCaptureStr,
                   ),
                 ],
               ),

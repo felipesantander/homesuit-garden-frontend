@@ -3,6 +3,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:garden_homesuit/config/app_colors.dart';
 import 'package:garden_homesuit/models/data_query_filter.model.dart';
 import 'package:garden_homesuit/models/channel.model.dart';
+import 'garden_filter_chip.dart';
 
 class MachineDetailsFilters extends ConsumerWidget {
   final DataQueryFilter filter;
@@ -64,9 +65,9 @@ class MachineDetailsFilters extends ConsumerWidget {
             runSpacing: 8,
             children: availableChannels.map((c) {
               final isSelected = filter.channels.contains(c.idChannel);
-              return FilterChip(
-                label: Text(c.name),
-                selected: isSelected,
+              return GardenFilterChip(
+                label: c.name,
+                isSelected: isSelected,
                 onSelected: (selected) {
                   final newChannels = List<String>.from(filter.channels);
                   if (selected) {
@@ -115,12 +116,14 @@ class MachineDetailsFilters extends ConsumerWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: isActive
+              ? AppColors.primary.withValues(alpha: 0.15)
+              : AppColors.surface.withValues(alpha: 0.5),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isActive
-                ? color.withValues(alpha: 0.5)
-                : AppColors.border.withValues(alpha: 0.5),
+                ? AppColors.primary
+                : AppColors.border.withValues(alpha: 0.3),
             width: isActive ? 1.5 : 1.0,
           ),
         ),
@@ -201,10 +204,10 @@ class MachineDetailsFilters extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: AppColors.surface.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: AppColors.primary.withValues(alpha: 0.5),
+          color: AppColors.primary.withValues(alpha: 0.3),
           width: 1.5,
         ),
       ),

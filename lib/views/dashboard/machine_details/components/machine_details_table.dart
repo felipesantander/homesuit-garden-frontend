@@ -3,6 +3,7 @@ import 'package:garden_homesuit/config/app_colors.dart';
 import 'package:intl/intl.dart';
 
 import 'package:garden_homesuit/models/channel.model.dart';
+import 'package:garden_homesuit/components/dashboard_card/dashboard_card.component.dart';
 
 class MachineDetailsTable extends StatelessWidget {
   final List<Map<String, dynamic>> historyData;
@@ -14,29 +15,49 @@ class MachineDetailsTable extends StatelessWidget {
     required this.selectedChannels,
   });
 
+  Widget _buildEmptyState(String message) {
+    return DashboardCard(
+      width: double.infinity,
+      borderRadius: 24,
+      padding: EdgeInsets.zero,
+      child: Container(
+        constraints: const BoxConstraints(minHeight: 200),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.table_chart_outlined,
+                color: AppColors.textSecondary.withValues(alpha: 0.3),
+                size: 48,
+              ),
+              const SizedBox(height: 16),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 32.0),
+                child: Text(
+                  message,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(color: AppColors.textSecondary),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (historyData.isEmpty) {
-      return const Center(
-        child: Padding(
-          padding: EdgeInsets.all(32.0),
-          child: Text(
-            'No hay datos históricos para los filtros seleccionados.',
-            style: TextStyle(color: AppColors.textSecondary),
-          ),
-        ),
+      return _buildEmptyState(
+        'No hay datos históricos para los filtros seleccionados.',
       );
     }
 
     if (selectedChannels.isEmpty) {
-      return const Center(
-        child: Padding(
-          padding: EdgeInsets.all(32.0),
-          child: Text(
-            'Selecciona al menos un canal para visualizar la tabla.',
-            style: TextStyle(color: AppColors.textSecondary),
-          ),
-        ),
+      return _buildEmptyState(
+        'Selecciona al menos un canal para visualizar la tabla.',
       );
     }
 
@@ -59,16 +80,9 @@ class MachineDetailsTable extends StatelessWidget {
     final sortedTimes = groupedByTime.keys.toList()
       ..sort((a, b) => b.compareTo(a));
 
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(
-          color: AppColors.border.withValues(alpha: 0.6),
-          width: 1.5,
-        ),
-      ),
-      clipBehavior: Clip.antiAlias,
+    return DashboardCard(
+      borderRadius: 24,
+      padding: EdgeInsets.zero,
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxHeight: 600),
         child: SingleChildScrollView(
@@ -76,29 +90,52 @@ class MachineDetailsTable extends StatelessWidget {
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: DataTable(
-              headingRowColor: WidgetStateProperty.all(AppColors.surface),
+              headingRowColor: WidgetStateProperty.all(
+                AppColors.background.withValues(alpha: 0.5),
+              ),
+              dataRowColor: WidgetStateProperty.resolveWith<Color?>((
+                Set<WidgetState> states,
+              ) {
+                return null; // Let alternating rows handle it if we used Theme,
+                // but here we can manually alternate if we want.
+              }),
+              // Flutter DataTable doesn't have a direct zebra property,
+              // we can handle it by mapping with index.
               columns: [
                 const DataColumn(
                   label: Text(
                     'Fecha / Hora',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
                   ),
                 ),
                 ...selectedChannels.map(
                   (c) => DataColumn(
                     label: Text(
                       c.name,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
                     ),
                   ),
                 ),
               ],
-              rows: sortedTimes.map((timeStr) {
+              rows: List.generate(sortedTimes.length, (index) {
+                final timeStr = sortedTimes[index];
                 final rowData = groupedByTime[timeStr]!;
                 final dt =
                     DateTime.tryParse(timeStr)?.toLocal() ?? DateTime.now();
+                final isEven = index % 2 == 0;
 
                 return DataRow(
+                  color: WidgetStateProperty.all(
+                    isEven
+                        ? Colors.transparent
+                        : AppColors.background.withValues(alpha: 0.3),
+                  ),
                   cells: [
                     DataCell(
                       RichText(
@@ -106,16 +143,16 @@ class MachineDetailsTable extends StatelessWidget {
                           text: DateFormat('dd/MM/yyyy').format(dt),
                           style: const TextStyle(
                             color: AppColors.textSecondary,
-                            fontSize: 13,
+                            fontSize: 12,
                           ),
                           children: [
-                            const TextSpan(text: '   '),
+                            const TextSpan(text: '  '),
                             TextSpan(
-                              text: DateFormat('HH:mm:ss').format(dt),
+                              text: DateFormat('HH:mm').format(dt),
                               style: const TextStyle(
                                 color: AppColors.textPrimary,
                                 fontWeight: FontWeight.w700,
-                                fontSize: 14,
+                                fontSize: 13,
                               ),
                             ),
                           ],
@@ -124,8 +161,6 @@ class MachineDetailsTable extends StatelessWidget {
                     ),
                     ...selectedChannels.map((c) {
                       final chId = c.idChannel;
-                      // Try to find the value by ID first, then fallback to name or formatted name
-                      // The API occasionally returns 'type' as the name instead of the ID.
                       final val =
                           rowData[chId] ??
                           rowData[c.name] ??
@@ -135,13 +170,18 @@ class MachineDetailsTable extends StatelessWidget {
                       return DataCell(
                         Text(
                           displayVal,
-                          style: const TextStyle(fontWeight: FontWeight.w600),
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: val != null
+                                ? AppColors.primary
+                                : AppColors.textSecondary,
+                          ),
                         ),
                       );
                     }),
                   ],
                 );
-              }).toList(),
+              }),
             ),
           ),
         ),

@@ -3,6 +3,7 @@ import 'package:garden_homesuit/config/app_colors.dart';
 import 'package:garden_homesuit/models/machine.model.dart';
 import 'package:garden_homesuit/providers/data_latest.provider.dart';
 import 'package:garden_homesuit/providers/data_history.provider.dart';
+import 'package:garden_homesuit/providers/machines.provider.dart';
 import 'package:intl/intl.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -57,6 +58,105 @@ class _MachineDashboardCardState extends ConsumerState<MachineDashboardCard> {
       return DateFormat('dd/MM/yyyy HH:mm:ss').format(lastCapture);
     } catch (e) {
       return '--:--';
+    }
+  }
+
+  Future<void> _confirmDelete(BuildContext context) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.transparent,
+        contentPadding: EdgeInsets.zero,
+        content: Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(
+              color: AppColors.border.withValues(alpha: 0.6),
+              width: 1.5,
+            ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.delete_sweep_rounded,
+                size: 48,
+                color: Colors.red,
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Eliminar Sensor',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                '¿Estás seguro de que deseas eliminar "${widget.machine.name}"? Esta acción no se puede deshacer.',
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: AppColors.textSecondary),
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () => Navigator.pop(context, false),
+                      child: const Text(
+                        'CANCELAR',
+                        style: TextStyle(color: AppColors.textMuted),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.pop(context, true),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text('ELIMINAR'),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    if (confirmed == true) {
+      try {
+        await ref
+            .read(machinesProvider.notifier)
+            .deleteMachine(widget.machine.id);
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Sensor eliminado correctamente'),
+              backgroundColor: AppColors.positive,
+            ),
+          );
+        }
+      } catch (e) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error al eliminar: $e'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
     }
   }
 
@@ -130,6 +230,7 @@ class _MachineDashboardCardState extends ConsumerState<MachineDashboardCard> {
                   isVisible: _isHovered,
                   onView: () =>
                       context.push('/dashboard/machine/${widget.machine.id}'),
+                  onDelete: () => _confirmDelete(context),
                 ),
               ],
             ),
