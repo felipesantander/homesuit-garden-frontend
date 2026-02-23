@@ -9,6 +9,9 @@ import '../views/web/dashboard/dashboard.view.dart'
 import '../views/mobile/dashboard/dashboard_mobile.view.dart'
     deferred as dashboard_mobile
     show DashboardMobileView;
+import '../views/dashboard/machine_details/machine_details.view.dart'
+    deferred as machine_details
+    show MachineDetailsView;
 import '../views/machine_candidates/machine_candidates.view.dart'
     deferred as machine_candidates
     show MachineCandidatesView;
@@ -65,6 +68,17 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/dashboard',
             builder: (context, state) => const ResponsiveDashboardWrapper(),
+          ),
+          GoRoute(
+            path: '/dashboard/machine/:id',
+            builder: (context, state) {
+              final id = state.pathParameters['id']!;
+              return DeferredWidget(
+                loader: machine_details.loadLibrary,
+                builder: () =>
+                    machine_details.MachineDetailsView(machineId: id),
+              );
+            },
           ),
           GoRoute(
             path: '/machine-candidates',

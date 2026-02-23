@@ -8,11 +8,13 @@ class MachineHistoryChart extends StatelessWidget {
   final AsyncValue<List<Map<String, dynamic>>> historyData;
   final bool isOnline;
   final String? lastSeenRelative;
+  final String relativeTime;
 
   const MachineHistoryChart({
     super.key,
     required this.historyData,
     required this.isOnline,
+    required this.relativeTime,
     this.lastSeenRelative,
   });
 

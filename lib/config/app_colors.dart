@@ -26,8 +26,8 @@ class AppColors {
   static const LinearGradient backgroundGradient = LinearGradient(
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
-    colors: [Color(0xFFF5F7FA), Color(0xFFE4E9F2)],
-    stops: [0.0, 1.0],
+    colors: [Color(0xFFF5F7FA), Color.fromARGB(255, 211, 221, 239)],
+    stops: [0.1, .9],
   );
 
   static const LinearGradient headerGradient = LinearGradient(

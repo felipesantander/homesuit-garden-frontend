@@ -38,7 +38,9 @@ class Machine {
       supportedFrequencies: (json['supported_frequencies'] as List? ?? [])
           .map((e) => e.toString())
           .toList(),
-      dashboardFrequency: json['dashboard_frequency'] as String?,
+      dashboardFrequency:
+          (json['dashboardFrequency'] ?? json['dashboard_frequency'])
+              as String?,
     );
   }
 

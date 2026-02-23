@@ -36,9 +36,29 @@ class _MachineStatusBadgeState extends State<MachineStatusBadge>
     super.dispose();
   }
 
+  String _formatRelativeTime(String timeStr) {
+    if (timeStr == 'No info' ||
+        timeStr == 'Nunca' ||
+        timeStr.startsWith('Hace ')) {
+      return timeStr;
+    }
+    try {
+      final lastCapture = DateTime.parse(timeStr);
+      final difference = DateTime.now().toUtc().difference(lastCapture);
+      if (difference.inSeconds < 60) return 'Hace instantes';
+      if (difference.inMinutes < 60) return 'Hace ${difference.inMinutes}m';
+      if (difference.inHours < 24) return 'Hace ${difference.inHours}h';
+      // Format as DD/MM/YYYY HH:mm instead of displaying the raw string
+      return '${lastCapture.toLocal().day.toString().padLeft(2, '0')}/${lastCapture.toLocal().month.toString().padLeft(2, '0')} ${lastCapture.toLocal().hour.toString().padLeft(2, '0')}:${lastCapture.toLocal().minute.toString().padLeft(2, '0')}';
+    } catch (e) {
+      return timeStr;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final statusColor = widget.isOnline ? AppColors.water : AppColors.negative;
+    final displayTime = _formatRelativeTime(widget.relativeTime);
 
     return Tooltip(
       message: widget.fullTimestamp ?? 'Sin fecha',
@@ -91,7 +111,7 @@ class _MachineStatusBadgeState extends State<MachineStatusBadge>
             ),
             const SizedBox(width: 6),
             Text(
-              widget.relativeTime,
+              displayTime,
               style: TextStyle(
                 fontSize: 9,
                 fontWeight: FontWeight.w600,

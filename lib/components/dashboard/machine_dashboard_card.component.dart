@@ -5,6 +5,7 @@ import 'package:garden_homesuit/providers/data_latest.provider.dart';
 import 'package:garden_homesuit/providers/data_history.provider.dart';
 import 'package:intl/intl.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'widgets/machine_status_badge.dart';
 import 'widgets/machine_history_chart.dart';
 import 'widgets/machine_quick_actions.dart';
@@ -121,10 +122,15 @@ class _MachineDashboardCardState extends ConsumerState<MachineDashboardCard> {
                     historyData: historyDataAsync,
                     isOnline: isOnline,
                     lastSeenRelative: relativeTime,
+                    relativeTime: relativeTime,
                   ),
                 ),
                 if (_isHovered) const SizedBox(height: 12),
-                MachineQuickActions(isVisible: _isHovered),
+                MachineQuickActions(
+                  isVisible: _isHovered,
+                  onView: () =>
+                      context.push('/dashboard/machine/${widget.machine.id}'),
+                ),
               ],
             ),
           ),
