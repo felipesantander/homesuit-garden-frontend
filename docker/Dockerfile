@@ -29,7 +29,7 @@ RUN mkdir /app/
 COPY . /app/
 WORKDIR /app/
 RUN echo DEBUG=false >> .env
-RUN flutter build web --release --dart-define=URL_HOST=https://finance.api.homesuite.cl
+RUN flutter build web --release --dart-define=URL_HOST=https://garden.api.homesuite.cl
 
 
 # Stage 2 - Create the run-time image
