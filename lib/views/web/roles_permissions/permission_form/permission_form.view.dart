@@ -9,9 +9,9 @@ import 'package:garden_homesuit/providers/businesses.provider.dart';
 import 'package:garden_homesuit/providers/machines.provider.dart';
 import 'package:garden_homesuit/providers/gardens.provider.dart';
 import 'package:garden_homesuit/models/business.model.dart';
-import 'package:garden_homesuit/views/roles_permissions/permission_form/components/permission_endpoints_section.dart';
-import 'package:garden_homesuit/views/roles_permissions/permission_form/components/permission_entity_section.dart';
-import 'package:garden_homesuit/views/roles_permissions/permission_form/components/permission_string_list_section.dart';
+import 'package:garden_homesuit/views/web/roles_permissions/permission_form/components/permission_endpoints_section.dart';
+import 'package:garden_homesuit/views/web/roles_permissions/permission_form/components/permission_entity_section.dart';
+import 'package:garden_homesuit/views/web/roles_permissions/permission_form/components/permission_string_list_section.dart';
 
 class PermissionFormView extends ConsumerStatefulWidget {
   final String? permissionId;

@@ -9,7 +9,7 @@ import 'package:garden_homesuit/providers/auth.provider.dart';
 import 'package:garden_homesuit/providers/channels.provider.dart';
 import 'package:garden_homesuit/providers/gardens.provider.dart';
 import 'package:garden_homesuit/providers/businesses.provider.dart';
-import 'package:garden_homesuit/views/machine_candidates/register_machine.view.dart';
+import 'package:garden_homesuit/views/web/machine_candidates/register_machine.view.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class RegisterMachineForm extends HookConsumerWidget {

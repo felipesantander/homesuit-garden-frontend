@@ -9,8 +9,8 @@ import 'package:garden_homesuit/providers/machines.provider.dart';
 import 'package:garden_homesuit/providers/channels.provider.dart';
 import 'package:garden_homesuit/providers/data_query.provider.dart';
 
-import 'package:garden_homesuit/views/dashboard/machine_details/components/machine_details_filters.dart';
-import 'package:garden_homesuit/views/dashboard/machine_details/components/machine_details_table.dart';
+import 'package:garden_homesuit/views/web/dashboard/machine_details/components/machine_details_filters.dart';
+import 'package:garden_homesuit/views/web/dashboard/machine_details/components/machine_details_table.dart';
 import 'package:garden_homesuit/components/dashboard/widgets/machine_history_chart.dart';
 import 'package:garden_homesuit/components/dashboard/widgets/machine_status_badge.dart';
 import 'package:garden_homesuit/components/dashboard_card/dashboard_card.component.dart';
