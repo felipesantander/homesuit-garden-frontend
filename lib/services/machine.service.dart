@@ -47,6 +47,12 @@ class MachineService {
     return Machine.fromJson(response.data as Map<String, dynamic>);
   }
 
+  /// PUT /api/machines/`{machineId}`/
+  Future<Machine> putUpdate(String machineId, Map<String, dynamic> data) async {
+    final response = await _dio.put('/api/machines/$machineId/', data: data);
+    return Machine.fromJson(response.data as Map<String, dynamic>);
+  }
+
   /// DELETE /api/machines/`{machineId}`/
   Future<void> delete(String machineId) async {
     await _dio.delete('/api/machines/$machineId/');

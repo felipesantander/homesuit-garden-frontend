@@ -145,18 +145,35 @@ class RegisterMachineForm extends HookConsumerWidget {
                 ref.read(authStateProvider.notifier).clearAuthState(),
           );
 
-          // Atomic Registration
-          await service.register(
-            serial: candidate.serial,
-            name: nameController.text,
-            supportedFrequencies: supportedFrequencies.value,
-            dashboardFrequency:
+          final payload = {
+            'serial': candidate.serial,
+            'Name': nameController.text,
+            'garden': selectedGarden.value,
+            'supported_frequencies': supportedFrequencies.value,
+            'dashboard_frequency':
                 dashboardFrequency.value ?? supportedFrequencies.value.first,
-            gardenId: selectedGarden.value,
-            configurations: channelMappings.value.entries
+            'configurations': channelMappings.value.entries
                 .map((e) => {'type': e.key, 'channel': e.value})
                 .toList(),
-          );
+          };
+
+          if (existingMachine != null) {
+            // Update existing machine
+            await service.putUpdate(existingMachine.id, payload);
+          } else {
+            // Register new candidate
+            await service.register(
+              serial: candidate.serial,
+              name: nameController.text,
+              supportedFrequencies: supportedFrequencies.value,
+              dashboardFrequency:
+                  dashboardFrequency.value ?? supportedFrequencies.value.first,
+              gardenId: selectedGarden.value,
+              configurations: channelMappings.value.entries
+                  .map((e) => {'type': e.key, 'channel': e.value})
+                  .toList(),
+            );
+          }
 
           onSaved();
         } catch (e) {
