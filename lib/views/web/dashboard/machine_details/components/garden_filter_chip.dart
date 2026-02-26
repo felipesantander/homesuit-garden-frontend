@@ -18,29 +18,7 @@ class GardenFilterChip extends StatelessWidget {
   });
 
   IconData _getIconForChannel(String name) {
-    if (channel != null && channel!.icon.isNotEmpty) {
-      return IconUtils.getIcon(channel!.icon);
-    }
-    final lowerName = name.toLowerCase();
-    if (lowerName.contains('temp')) {
-      return Icons.thermostat_rounded;
-    }
-    if (lowerName.contains('pres')) {
-      return Icons.speed_rounded;
-    }
-    if (lowerName.contains('hum')) {
-      return Icons.water_drop_rounded;
-    }
-    if (lowerName.contains('volt')) {
-      return Icons.electric_bolt_rounded;
-    }
-    if (lowerName.contains('curr')) {
-      return Icons.electrical_services_rounded;
-    }
-    if (lowerName.contains('flow')) {
-      return Icons.waves_rounded;
-    }
-    return Icons.sensors_rounded;
+    return IconUtils.getIconForNameOrType(channel?.icon, channel?.name ?? name);
   }
 
   Color _getColorForChannel(String name) {
@@ -48,26 +26,13 @@ class GardenFilterChip extends StatelessWidget {
       try {
         return Color(int.parse(channel!.color.replaceFirst('#', '0xFF')));
       } catch (e) {
-        return AppColors.shadow;
+        // Fallback handled below
       }
     }
-    final lowerName = name.toLowerCase();
-    if (lowerName.contains('temp')) {
-      return Colors.orange;
-    }
-    if (lowerName.contains('pres')) {
-      return Colors.blue;
-    }
-    if (lowerName.contains('hum')) {
-      return Colors.cyan;
-    }
-    if (lowerName.contains('volt') || lowerName.contains('curr')) {
-      return Colors.yellow.shade800;
-    }
-    if (lowerName.contains('flow')) {
-      return Colors.blueAccent;
-    }
-    return AppColors.primary;
+    return IconUtils.getColorForNameOrType(
+      channel?.icon,
+      channel?.name ?? name,
+    );
   }
 
   String _normalizeLabel(String text) {

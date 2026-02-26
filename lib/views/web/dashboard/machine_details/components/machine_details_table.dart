@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:garden_homesuit/config/app_colors.dart';
 import 'package:intl/intl.dart';
 
+import 'package:garden_homesuit/utils/icon_utils.dart';
+
 import 'package:garden_homesuit/models/channel.model.dart';
 import 'package:garden_homesuit/components/dashboard_card/dashboard_card.component.dart';
 
@@ -113,12 +115,26 @@ class MachineDetailsTable extends StatelessWidget {
                 ),
                 ...selectedChannels.map(
                   (c) => DataColumn(
-                    label: Text(
-                      c.name,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
+                    label: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          IconUtils.getIconForNameOrType(c.icon, c.name),
+                          size: 16,
+                          color: IconUtils.getColorForNameOrType(
+                            c.icon,
+                            c.name,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          c.name,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),

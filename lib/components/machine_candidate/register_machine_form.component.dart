@@ -10,6 +10,8 @@ import 'package:garden_homesuit/providers/channels.provider.dart';
 import 'package:garden_homesuit/providers/gardens.provider.dart';
 import 'package:garden_homesuit/providers/businesses.provider.dart';
 import 'package:garden_homesuit/views/web/machine_candidates/register_machine.view.dart';
+import 'package:garden_homesuit/providers/machines.provider.dart';
+import 'package:garden_homesuit/providers/configuration_channels.provider.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class RegisterMachineForm extends HookConsumerWidget {
@@ -24,16 +26,111 @@ class RegisterMachineForm extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final nameController = useTextEditingController();
+    final machines = ref.watch(machinesProvider).value ?? [];
+    final existingMachine = machines
+        .where((m) => m.serial == candidate.serial)
+        .firstOrNull;
+
+    final nameController = useTextEditingController(
+      text: existingMachine?.name,
+    );
     final formKey = useMemoized(() => GlobalKey<FormState>());
     final channelsAsync = ref.watch(channelsProvider);
     final gardensAsync = ref.watch(gardensProvider);
     final businessesAsync = ref.watch(businessesProvider);
 
-    final selectedGarden = useState<String?>(null);
-    final channelMappings = useState<Map<String, String>>({});
-    final supportedFrequencies = useState<List<String>>(['1_minutes']);
-    final dashboardFrequency = useState<String?>('1_minutes');
+    final selectedGarden = useState<String?>(existingMachine?.garden);
+    final channelMappings = useState<Map<String, String>>(
+      existingMachine?.channelMappings ?? {},
+    );
+    final supportedFrequencies = useState<List<String>>(
+      existingMachine?.supportedFrequencies.isNotEmpty == true
+          ? existingMachine!.supportedFrequencies
+          : ['1_minutes'],
+    );
+    final dashboardFrequency = useState<String?>(
+      (existingMachine?.dashboardFrequency != null &&
+              supportedFrequencies.value.contains(
+                existingMachine!.dashboardFrequency,
+              ))
+          ? existingMachine.dashboardFrequency
+          : (supportedFrequencies.value.isNotEmpty
+                ? supportedFrequencies.value.first
+                : '1_minutes'),
+    );
+
+    final configurationChannelsAsync = ref.watch(configurationChannelsProvider);
+
+    // Sync state when existingMachine or detailed configurations arrive/change
+    useEffect(() {
+      Future.microtask(() {
+        if (!context.mounted) return;
+
+        // 1. Sync Name and Garden if needed
+        if (existingMachine != null) {
+          if (nameController.text.isEmpty) {
+            nameController.text = existingMachine.name;
+          }
+          if (selectedGarden.value == null) {
+            selectedGarden.value = existingMachine.garden;
+          }
+          if (supportedFrequencies.value.length == 1 &&
+              supportedFrequencies.value.first == '1_minutes' &&
+              existingMachine.supportedFrequencies.isNotEmpty) {
+            supportedFrequencies.value = existingMachine.supportedFrequencies;
+          }
+        }
+
+        // 2. Resolve robust channel mappings from multiple sources
+        final Map<String, String> resolvedMappings = Map.from(
+          channelMappings.value,
+        );
+        bool changed = false;
+
+        // From existing machine object (basic mappings)
+        if (existingMachine?.channelMappings != null) {
+          for (final entry in existingMachine!.channelMappings!.entries) {
+            if (!resolvedMappings.containsKey(entry.key)) {
+              resolvedMappings[entry.key] = entry.value;
+              changed = true;
+            }
+          }
+        }
+
+        // From detailed configuration channels service
+        final configList = configurationChannelsAsync.value;
+        if (configList != null) {
+          for (final item in configList) {
+            if (item['serial'] == candidate.serial) {
+              final type = item['type']?.toString();
+              var channelRaw =
+                  item['channel'] ?? item['idChannel'] ?? item['id_channel'];
+
+              if (channelRaw is Map) {
+                channelRaw =
+                    channelRaw['idChannel'] ??
+                    channelRaw['id_channel'] ??
+                    channelRaw['id'] ??
+                    channelRaw['uuid'];
+              }
+
+              final channelId = channelRaw?.toString();
+              if (type != null &&
+                  channelId != null &&
+                  !resolvedMappings.containsKey(type)) {
+                resolvedMappings[type] = channelId;
+                changed = true;
+              }
+            }
+          }
+        }
+
+        if (changed) {
+          channelMappings.value = resolvedMappings;
+        }
+      });
+      return null;
+    }, [existingMachine, configurationChannelsAsync.value]);
 
     final handleSave = useCallback(
       () async {

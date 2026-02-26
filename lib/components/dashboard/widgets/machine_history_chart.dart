@@ -140,7 +140,7 @@ class MachineHistoryChart extends StatelessWidget {
             isOnline ? Icons.auto_graph_rounded : Icons.sensors_off_rounded,
             size: 32,
             color: isOnline
-                ? AppColors.primary.withValues(alpha: 0.4)
+                ? AppColors.positive.withValues(alpha: 0.4)
                 : AppColors.negative.withValues(alpha: 0.4),
           ),
           const SizedBox(height: 12),

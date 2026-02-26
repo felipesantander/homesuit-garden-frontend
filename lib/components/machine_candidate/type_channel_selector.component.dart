@@ -103,7 +103,7 @@ class TypeChannelSelector extends StatelessWidget {
           const SizedBox(height: 12),
           DropdownButtonHideUnderline(
             child: DropdownButtonFormField<String?>(
-              initialValue: selectedValue,
+              value: selectedValue,
               decoration: InputDecoration(
                 contentPadding: const EdgeInsets.symmetric(horizontal: 12),
                 filled: true,

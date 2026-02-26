@@ -7,6 +7,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:hooks_riverpod/legacy.dart';
 import 'package:garden_homesuit/models/machine_candidate.model.dart';
 import 'package:garden_homesuit/providers/data_latest.provider.dart';
+import 'package:garden_homesuit/providers/machines.provider.dart';
 import 'package:intl/intl.dart';
 import 'package:go_router/go_router.dart';
 
@@ -36,7 +37,7 @@ class RegisterMachineView extends HookConsumerWidget {
       };
     }, []);
 
-    final candidate = ref.watch(machineCandidateBySerialProvider(serial));
+    final candidate = ref.watch(machineConfigurationTargetProvider(serial));
     final formKey = useMemoized(() => GlobalObjectKey(serial));
 
     return Container(
@@ -102,7 +103,8 @@ class RegisterMachineView extends HookConsumerWidget {
                                       child: _FormCard(
                                         key: formKey,
                                         candidate: candidate,
-                                        onSaved: () => _handleOnSaved(context),
+                                        onSaved: () =>
+                                            _handleOnSaved(context, ref),
                                       ),
                                     ),
                                   ],
@@ -114,7 +116,8 @@ class RegisterMachineView extends HookConsumerWidget {
                                     _FormCard(
                                       key: formKey,
                                       candidate: candidate,
-                                      onSaved: () => _handleOnSaved(context),
+                                      onSaved: () =>
+                                          _handleOnSaved(context, ref),
                                     ),
                                   ],
                                 ),
@@ -128,8 +131,9 @@ class RegisterMachineView extends HookConsumerWidget {
     );
   }
 
-  void _handleOnSaved(BuildContext context) {
-    context.go('/machine-candidates');
+  void _handleOnSaved(BuildContext context, WidgetRef ref) {
+    ref.read(machinesProvider.notifier).refresh();
+    context.go('/dashboard');
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Nodo de sensores configurado con precisión'),
@@ -518,31 +522,39 @@ class _LoadingOrErrorState extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final candidatesAsync = ref.watch(machineCandidatesProvider);
+    final machinesAsync = ref.watch(machinesProvider);
 
-    return candidatesAsync.when(
-      data: (candidates) => Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(
-            Icons.search_off_rounded,
-            size: 64,
-            color: AppColors.textMuted,
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'No se encontró el dispositivo con serie:\n$serial',
-            textAlign: TextAlign.center,
-            style: const TextStyle(color: AppColors.textSecondary),
-          ),
-          const SizedBox(height: 24),
-          ElevatedButton(
-            onPressed: () => context.pop(),
-            child: const Text('VOLVER'),
-          ),
-        ],
-      ),
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (err, _) => Center(child: Text('Error: $err')),
+    if (candidatesAsync.isLoading || machinesAsync.isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (candidatesAsync.hasError) {
+      return Center(child: Text('Error: ${candidatesAsync.error}'));
+    }
+    if (machinesAsync.hasError) {
+      return Center(child: Text('Error: ${machinesAsync.error}'));
+    }
+
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Icon(
+          Icons.search_off_rounded,
+          size: 64,
+          color: AppColors.textMuted,
+        ),
+        const SizedBox(height: 16),
+        Text(
+          'No se encontró el dispositivo con serie:\n$serial',
+          textAlign: TextAlign.center,
+          style: const TextStyle(color: AppColors.textSecondary),
+        ),
+        const SizedBox(height: 24),
+        ElevatedButton(
+          onPressed: () => context.pop(),
+          child: const Text('VOLVER'),
+        ),
+      ],
     );
   }
 }

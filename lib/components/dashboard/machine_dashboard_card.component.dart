@@ -191,7 +191,7 @@ class _MachineDashboardCardState extends ConsumerState<MachineDashboardCard> {
             boxShadow: [
               BoxShadow(
                 color: isOnline
-                    ? AppColors.water.withValues(alpha: 0.2)
+                    ? AppColors.positive.withValues(alpha: 0.2)
                     : _isHovered
                     ? AppColors.primary.withValues(alpha: 0.15)
                     : AppColors.shadow.withValues(alpha: 0.1),
@@ -235,6 +235,9 @@ class _MachineDashboardCardState extends ConsumerState<MachineDashboardCard> {
                   isVisible: _isHovered,
                   onView: () =>
                       context.push('/dashboard/machine/${widget.machine.id}'),
+                  onConfig: () => context.push(
+                    '/register-machine/${widget.machine.serial}',
+                  ),
                   onDelete: () => _confirmDelete(context),
                 ),
               ],

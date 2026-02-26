@@ -104,7 +104,13 @@ class RegisterMachineFrequencies extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         DropdownButtonFormField<String>(
-          initialValue: dashboardFrequency,
+          value:
+              (dashboardFrequency != null &&
+                  selectedFrequencies.contains(dashboardFrequency))
+              ? dashboardFrequency
+              : (selectedFrequencies.isNotEmpty
+                    ? selectedFrequencies.first
+                    : null),
           decoration: InputDecoration(
             hintText: 'Seleccione frecuencia para vista principal',
             hintStyle: const TextStyle(

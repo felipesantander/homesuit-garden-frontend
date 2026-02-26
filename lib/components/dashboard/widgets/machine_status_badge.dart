@@ -48,7 +48,6 @@ class _MachineStatusBadgeState extends State<MachineStatusBadge>
       if (difference.inSeconds < 60) return 'Hace instantes';
       if (difference.inMinutes < 60) return 'Hace ${difference.inMinutes}m';
       if (difference.inHours < 24) return 'Hace ${difference.inHours}h';
-      // Format as DD/MM/YYYY HH:mm instead of displaying the raw string
       return '${lastCapture.toLocal().day.toString().padLeft(2, '0')}/${lastCapture.toLocal().month.toString().padLeft(2, '0')} ${lastCapture.toLocal().hour.toString().padLeft(2, '0')}:${lastCapture.toLocal().minute.toString().padLeft(2, '0')}';
     } catch (e) {
       return timeStr;
@@ -57,7 +56,9 @@ class _MachineStatusBadgeState extends State<MachineStatusBadge>
 
   @override
   Widget build(BuildContext context) {
-    final statusColor = widget.isOnline ? AppColors.water : AppColors.negative;
+    final statusColor = widget.isOnline
+        ? AppColors.positive
+        : AppColors.negative;
     final displayTime = _formatRelativeTime(widget.relativeTime);
 
     return Tooltip(
@@ -80,8 +81,8 @@ class _MachineStatusBadgeState extends State<MachineStatusBadge>
                     animation: _controller,
                     builder: (context, child) {
                       return Container(
-                        width: 12 + (_controller.value * 12),
-                        height: 12 + (_controller.value * 12),
+                        width: 12 + (_controller.value * 4),
+                        height: 12 + (_controller.value * 4),
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: statusColor.withValues(

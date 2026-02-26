@@ -189,7 +189,7 @@ class _MachineDashboardMobileCardState
           boxShadow: [
             BoxShadow(
               color: isOnline
-                  ? AppColors.water.withValues(alpha: 0.2)
+                  ? AppColors.positive.withValues(alpha: 0.2)
                   : AppColors.shadow.withValues(alpha: 0.1),
               blurRadius: 12,
               offset: const Offset(0, 6),
@@ -229,6 +229,8 @@ class _MachineDashboardMobileCardState
                 isVisible: true,
                 onView: () =>
                     context.push('/dashboard/machine/${widget.machine.id}'),
+                onConfig: () =>
+                    context.push('/register-machine/${widget.machine.serial}'),
                 onDelete: () => _confirmDelete(context),
                 iconSize: 20,
                 fontSize: 13,

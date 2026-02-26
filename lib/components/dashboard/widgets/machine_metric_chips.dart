@@ -33,35 +33,16 @@ class MachineMetricChips extends ConsumerWidget {
         Color color;
 
         if (channel != null) {
-          iconData = IconUtils.getIcon(channel.icon);
+          iconData = IconUtils.getIconForNameOrType(channel.icon, channel.name);
           try {
             color = Color(int.parse(channel.color.replaceFirst('#', '0xFF')));
           } catch (e) {
             color = AppColors.shadow;
           }
         } else {
-          // Fallback to legacy hardcoded logic
-          switch (type) {
-            case 'Power':
-              iconData = Icons.bolt_rounded;
-              color = Colors.orange;
-              break;
-            case 'A': // Current
-              iconData = Icons.electrical_services_rounded;
-              color = AppColors.primary;
-              break;
-            case 'L': // Humidity
-              iconData = Icons.opacity_rounded;
-              color = AppColors.water;
-              break;
-            case 'T': // Temperature
-              iconData = Icons.thermostat_rounded;
-              color = Colors.orangeAccent;
-              break;
-            default:
-              iconData = Icons.analytics_rounded;
-              color = AppColors.textSecondary;
-          }
+          // Fallback to robust icon selector and color
+          iconData = IconUtils.getIconForNameOrType(channelId, type);
+          color = IconUtils.getColorForNameOrType(channelId, type);
         }
 
         return Container(

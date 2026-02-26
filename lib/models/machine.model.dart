@@ -32,9 +32,9 @@ class Machine {
       serial: json['serial'] as String? ?? 'Desconocido',
       name: (json['Name'] ?? json['name']) as String? ?? 'Nodo sin nombre',
       garden: json['garden']?.toString(),
-      channelMappings: json['channel_mappings'] != null
-          ? Map<String, String>.from(json['channel_mappings'] as Map)
-          : null,
+      channelMappings: _parseMappings(
+        json['channel_mappings'] ?? json['configurations'],
+      ),
       supportedFrequencies: (json['supported_frequencies'] as List? ?? [])
           .map((e) => e.toString())
           .toList(),
@@ -42,6 +42,40 @@ class Machine {
           (json['dashboardFrequency'] ?? json['dashboard_frequency'])
               as String?,
     );
+  }
+
+  static Map<String, String>? _parseMappings(dynamic raw) {
+    if (raw == null) return null;
+    if (raw is Map) {
+      return Map<String, String>.from(
+        raw.map((k, v) => MapEntry(k.toString(), v.toString())),
+      );
+    }
+    if (raw is List) {
+      final Map<String, String> mappings = {};
+      for (final item in raw) {
+        if (item is Map) {
+          final type = item['type']?.toString();
+          var channelRaw =
+              item['channel'] ?? item['idChannel'] ?? item['id_channel'];
+
+          if (channelRaw is Map) {
+            channelRaw =
+                channelRaw['idChannel'] ??
+                channelRaw['id_channel'] ??
+                channelRaw['id'] ??
+                channelRaw['uuid'];
+          }
+
+          final channelId = channelRaw?.toString();
+          if (type != null && channelId != null) {
+            mappings[type] = channelId;
+          }
+        }
+      }
+      return mappings.isNotEmpty ? mappings : null;
+    }
+    return null;
   }
 
   Map<String, dynamic> toJson() {
