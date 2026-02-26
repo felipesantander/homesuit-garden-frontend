@@ -40,19 +40,19 @@ class MachineHistoryChart extends StatelessWidget {
             isVisible: true,
             labelStyle: const TextStyle(
               fontSize: 8,
+              fontFamily: 'Roboto',
               color: AppColors.textMuted,
             ),
             dateFormat: DateFormat.Hm(),
             majorGridLines: const MajorGridLines(width: 0),
             axisLine: const AxisLine(width: 0),
-            intervalType: DateTimeIntervalType.minutes,
-            interval: 10,
             edgeLabelPlacement: EdgeLabelPlacement.shift,
           ),
           primaryYAxis: NumericAxis(
             isVisible: true,
             labelStyle: const TextStyle(
               fontSize: 8,
+              fontFamily: 'Roboto',
               color: AppColors.textMuted,
             ),
             majorGridLines: MajorGridLines(
@@ -66,15 +66,30 @@ class MachineHistoryChart extends StatelessWidget {
             position: LegendPosition.top,
             overflowMode: LegendItemOverflowMode.wrap,
             itemPadding: 8,
-            textStyle: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+            textStyle: TextStyle(
+              fontSize: 12,
+              fontFamily: 'Roboto',
+              color: AppColors.textSecondary,
+            ),
           ),
           tooltipBehavior: TooltipBehavior(enable: true),
           series: grouped.entries.map((entry) {
             final index = grouped.keys.toList().indexOf(entry.key);
             final seriesColor = _getSeriesColor(index);
 
+            // Filter out entries with invalid timestamps or values
+            final validData = entry.value.where((m) {
+              final ts = m['timestamp'];
+              final val = m['value'];
+              return ts is String &&
+                  DateTime.tryParse(ts) != null &&
+                  val is num &&
+                  !val.isNaN &&
+                  !val.isInfinite;
+            }).toList();
+
             return AreaSeries<Map<String, dynamic>, DateTime>(
-              dataSource: entry.value,
+              dataSource: validData,
               xValueMapper: (m, _) =>
                   DateTime.parse(m['timestamp'] as String).toLocal(),
               yValueMapper: (m, _) => (m['value'] as num).toDouble(),
