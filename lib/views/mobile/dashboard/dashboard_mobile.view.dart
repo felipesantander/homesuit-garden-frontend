@@ -4,7 +4,7 @@ import 'package:garden_homesuit/config/app_colors.dart';
 
 import 'package:go_router/go_router.dart';
 
-import 'package:garden_homesuit/components/dashboard/machine_dashboard_card.component.dart';
+import 'package:garden_homesuit/components/dashboard/machine_dashboard_mobile_card.component.dart';
 import 'package:garden_homesuit/providers/machines.provider.dart';
 import 'package:garden_homesuit/models/machine.model.dart';
 
@@ -122,15 +122,15 @@ class _MobileMachinesList extends StatelessWidget {
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 160),
       itemCount: machines.length,
       itemBuilder: (context, index) {
         final machine = machines[index];
         return Padding(
           padding: const EdgeInsets.only(bottom: 16),
           child: SizedBox(
-            height: 320,
-            child: MachineDashboardCard(
+            height: 360,
+            child: MachineDashboardMobileCard(
               machine: machine,
               onTap: () {
                 // Future navigation to machine details

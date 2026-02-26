@@ -143,7 +143,7 @@ class _GroupedChannelsList extends StatelessWidget {
     final sortedBizIds = grouped.keys.toList();
 
     return ListView.builder(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 160),
       itemCount: sortedBizIds.length,
       itemBuilder: (context, bizIndex) {
         final bizId = sortedBizIds[bizIndex];

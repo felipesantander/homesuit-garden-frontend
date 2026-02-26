@@ -3,6 +3,7 @@ import 'package:garden_homesuit/config/app_colors.dart';
 import 'package:garden_homesuit/models/channel.model.dart';
 import 'package:garden_homesuit/providers/channels.provider.dart';
 import 'package:garden_homesuit/providers/businesses.provider.dart';
+import 'package:garden_homesuit/utils/icon_utils.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class ChannelForm extends ConsumerStatefulWidget {
@@ -20,7 +21,20 @@ class _ChannelFormState extends ConsumerState<ChannelForm> {
   late TextEditingController _nameController;
   late TextEditingController _unitController;
   String? _selectedBusiness;
+  late String _selectedColor;
+  late String _selectedIcon;
   bool _isLoading = false;
+
+  final List<String> _predefinedColors = [
+    '#4A86C5',
+    '#27AE60',
+    '#F1C40F',
+    '#E67E22',
+    '#E74C3C',
+    '#9B59B6',
+    '#34495E',
+    '#1ABC9C',
+  ];
 
   @override
   void initState() {
@@ -28,6 +42,10 @@ class _ChannelFormState extends ConsumerState<ChannelForm> {
     _nameController = TextEditingController(text: widget.channel?.name ?? '');
     _unitController = TextEditingController(text: widget.channel?.unit ?? '');
     _selectedBusiness = widget.channel?.business;
+    _selectedColor =
+        widget.channel?.color ??
+        _predefinedColors.first; // Default to first color
+    _selectedIcon = widget.channel?.icon ?? 'sensors';
   }
 
   @override
@@ -50,6 +68,8 @@ class _ChannelFormState extends ConsumerState<ChannelForm> {
               _nameController.text,
               unit: _unitController.text,
               businessId: _selectedBusiness,
+              color: _selectedColor,
+              icon: _selectedIcon,
             );
       } else {
         await ref
@@ -58,6 +78,8 @@ class _ChannelFormState extends ConsumerState<ChannelForm> {
               'name': _nameController.text,
               'unit': _unitController.text,
               'business': _selectedBusiness,
+              'color': _selectedColor,
+              'icon': _selectedIcon,
             });
       }
       if (!mounted) return;
@@ -195,6 +217,110 @@ class _ChannelFormState extends ConsumerState<ChannelForm> {
             error: (e, _) => Text(
               'Error al cargar negocios: $e',
               style: const TextStyle(color: AppColors.negative),
+            ),
+          ),
+          const SizedBox(height: 20),
+          const Text(
+            'Color',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: AppColors.textSecondary,
+            ),
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            height: 40,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: _predefinedColors.length,
+              separatorBuilder: (context, index) => const SizedBox(width: 12),
+              itemBuilder: (context, index) {
+                final colorHex = _predefinedColors[index];
+                final isSelected = _selectedColor == colorHex;
+                final color = Color(
+                  int.parse(colorHex.replaceFirst('#', '0xFF')),
+                );
+
+                return GestureDetector(
+                  onTap: () => setState(() => _selectedColor = colorHex),
+                  child: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: color,
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: isSelected
+                            ? AppColors.primary
+                            : Colors.transparent,
+                        width: 3,
+                      ),
+                      boxShadow: [
+                        if (isSelected)
+                          BoxShadow(
+                            color: color.withValues(alpha: 0.4),
+                            blurRadius: 8,
+                            spreadRadius: 2,
+                          ),
+                      ],
+                    ),
+                    child: isSelected
+                        ? const Icon(Icons.check, color: Colors.white, size: 20)
+                        : null,
+                  ),
+                );
+              },
+            ),
+          ),
+          const SizedBox(height: 24),
+          const Text(
+            'Icono',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: AppColors.textSecondary,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: AppColors.background,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 5,
+                mainAxisSpacing: 8,
+                crossAxisSpacing: 8,
+              ),
+              itemCount: IconUtils.getAvailableIcons().length,
+              itemBuilder: (context, index) {
+                final iconName = IconUtils.getAvailableIcons()[index];
+                final isSelected = _selectedIcon == iconName;
+                final iconData = IconUtils.getIcon(iconName);
+
+                return GestureDetector(
+                  onTap: () => setState(() => _selectedIcon = iconName),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? AppColors.primary
+                          : Colors.white.withValues(alpha: 0.5),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(
+                      iconData,
+                      color: isSelected ? Colors.white : AppColors.textMuted,
+                      size: 20,
+                    ),
+                  ),
+                );
+              },
             ),
           ),
           const SizedBox(height: 32),

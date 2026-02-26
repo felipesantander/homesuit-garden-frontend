@@ -7,9 +7,9 @@ class Garden {
 
   factory Garden.fromJson(Map<String, dynamic> json) {
     return Garden(
-      idGarden: json['idGarden'].toString(),
-      name: json['name'] as String,
-      business: json['business'].toString(),
+      idGarden: json['idGarden']?.toString() ?? '',
+      name: (json['name'] ?? json['Name'])?.toString() ?? '',
+      business: (json['business'] ?? json['idBusiness'])?.toString() ?? '',
     );
   }
 

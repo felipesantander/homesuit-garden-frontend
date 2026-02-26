@@ -6,6 +6,7 @@ import 'package:garden_homesuit/models/business.model.dart';
 import 'package:garden_homesuit/models/channel.model.dart';
 import 'package:garden_homesuit/providers/businesses.provider.dart';
 import 'package:garden_homesuit/providers/channels.provider.dart';
+import 'package:garden_homesuit/utils/icon_utils.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class ChannelCard extends ConsumerStatefulWidget {
@@ -105,12 +106,38 @@ class _ChannelCardState extends ConsumerState<ChannelCard> {
                           Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: AppColors.primarySoft,
+                              color: () {
+                                try {
+                                  return Color(
+                                    int.parse(
+                                      widget.channel.color.replaceFirst(
+                                        '#',
+                                        '0xFF',
+                                      ),
+                                    ),
+                                  );
+                                } catch (e) {
+                                  return AppColors.shadow;
+                                }
+                              }().withValues(alpha: 0.15),
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: const Icon(
-                              Icons.sensors_rounded,
-                              color: AppColors.primary,
+                            child: Icon(
+                              IconUtils.getIcon(widget.channel.icon),
+                              color: () {
+                                try {
+                                  return Color(
+                                    int.parse(
+                                      widget.channel.color.replaceFirst(
+                                        '#',
+                                        '0xFF',
+                                      ),
+                                    ),
+                                  );
+                                } catch (e) {
+                                  return AppColors.shadow;
+                                }
+                              }(),
                               size: 18,
                             ),
                           ),

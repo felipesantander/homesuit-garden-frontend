@@ -37,9 +37,17 @@ class ChannelsNotifier extends AsyncNotifier<List<Channel>> {
     String name, {
     required String unit,
     String? businessId,
+    String? color,
+    String? icon,
   }) async {
     final service = ref.read(channelServiceProvider);
-    await service.create(name: name, unit: unit, business: businessId);
+    await service.create(
+      name: name,
+      unit: unit,
+      business: businessId,
+      color: color,
+      icon: icon,
+    );
     await refresh();
   }
 

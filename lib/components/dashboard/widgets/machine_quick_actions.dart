@@ -6,6 +6,9 @@ class MachineQuickActions extends StatelessWidget {
   final VoidCallback? onView;
   final VoidCallback? onConfig;
   final VoidCallback? onDelete;
+  final double iconSize;
+  final double fontSize;
+  final EdgeInsetsGeometry padding;
 
   const MachineQuickActions({
     super.key,
@@ -13,6 +16,9 @@ class MachineQuickActions extends StatelessWidget {
     this.onView,
     this.onConfig,
     this.onDelete,
+    this.iconSize = 14,
+    this.fontSize = 10,
+    this.padding = const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
   });
 
   @override
@@ -26,12 +32,18 @@ class MachineQuickActions extends StatelessWidget {
             icon: Icons.visibility_rounded,
             label: 'Ver',
             onPressed: onView ?? () {},
+            iconSize: iconSize,
+            fontSize: fontSize,
+            padding: padding,
           ),
           const SizedBox(width: 8),
           _ActionButton(
             icon: Icons.settings_rounded,
             label: 'Config',
             onPressed: onConfig ?? () {},
+            iconSize: iconSize,
+            fontSize: fontSize,
+            padding: padding,
           ),
           const SizedBox(width: 8),
           _ActionButton(
@@ -39,6 +51,9 @@ class MachineQuickActions extends StatelessWidget {
             label: 'Eliminar',
             onPressed: onDelete ?? () {},
             color: Colors.red,
+            iconSize: iconSize,
+            fontSize: fontSize,
+            padding: padding,
           ),
         ],
       ),
@@ -51,12 +66,18 @@ class _ActionButton extends StatelessWidget {
   final String label;
   final VoidCallback onPressed;
   final Color? color;
+  final double iconSize;
+  final double fontSize;
+  final EdgeInsetsGeometry padding;
 
   const _ActionButton({
     required this.icon,
     required this.label,
     required this.onPressed,
     this.color,
+    required this.iconSize,
+    required this.fontSize,
+    required this.padding,
   });
 
   @override
@@ -69,7 +90,7 @@ class _ActionButton extends StatelessWidget {
         onTap: onPressed,
         borderRadius: BorderRadius.circular(8),
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          padding: padding,
           decoration: BoxDecoration(
             border: Border.all(color: themeColor.withValues(alpha: 0.2)),
             borderRadius: BorderRadius.circular(8),
@@ -77,12 +98,12 @@ class _ActionButton extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(icon, size: 14, color: themeColor),
+              Icon(icon, size: iconSize, color: themeColor),
               const SizedBox(width: 4),
               Text(
                 label,
                 style: TextStyle(
-                  fontSize: 10,
+                  fontSize: fontSize,
                   fontWeight: FontWeight.bold,
                   color: themeColor,
                 ),

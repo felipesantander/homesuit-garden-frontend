@@ -67,6 +67,7 @@ class MachineDetailsFilters extends ConsumerWidget {
               final isSelected = filter.channels.contains(c.idChannel);
               return GardenFilterChip(
                 label: c.name,
+                channel: c,
                 isSelected: isSelected,
                 onSelected: (selected) {
                   final newChannels = List<String>.from(filter.channels);

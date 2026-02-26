@@ -1,19 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:garden_homesuit/config/app_colors.dart';
+import 'package:garden_homesuit/models/channel.model.dart';
+import 'package:garden_homesuit/utils/icon_utils.dart';
 
 class GardenFilterChip extends StatelessWidget {
   final String label;
   final bool isSelected;
   final ValueChanged<bool> onSelected;
+  final Channel? channel;
 
   const GardenFilterChip({
     super.key,
     required this.label,
     required this.isSelected,
     required this.onSelected,
+    this.channel,
   });
 
   IconData _getIconForChannel(String name) {
+    if (channel != null && channel!.icon.isNotEmpty) {
+      return IconUtils.getIcon(channel!.icon);
+    }
     final lowerName = name.toLowerCase();
     if (lowerName.contains('temp')) {
       return Icons.thermostat_rounded;
@@ -37,6 +44,13 @@ class GardenFilterChip extends StatelessWidget {
   }
 
   Color _getColorForChannel(String name) {
+    if (channel != null && channel!.color.isNotEmpty) {
+      try {
+        return Color(int.parse(channel!.color.replaceFirst('#', '0xFF')));
+      } catch (e) {
+        return AppColors.shadow;
+      }
+    }
     final lowerName = name.toLowerCase();
     if (lowerName.contains('temp')) {
       return Colors.orange;

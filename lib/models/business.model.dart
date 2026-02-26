@@ -6,8 +6,8 @@ class Business {
 
   factory Business.fromJson(Map<String, dynamic> json) {
     return Business(
-      idBusiness: json['idBusiness'].toString(),
-      name: json['name'] as String,
+      idBusiness: json['idBusiness']?.toString() ?? '',
+      name: (json['name'] ?? json['Name'])?.toString() ?? '',
     );
   }
 

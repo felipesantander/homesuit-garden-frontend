@@ -22,10 +22,18 @@ class ChannelService {
     required String name,
     required String unit,
     String? business,
+    String? color,
+    String? icon,
   }) async {
     final response = await _dio.post(
       '/api/channels/',
-      data: {'name': name, 'unit': unit, 'business': business},
+      data: {
+        'name': name,
+        'unit': unit,
+        'business': business,
+        'color': color,
+        'icon': icon,
+      },
     );
     return Channel.fromJson(response.data as Map<String, dynamic>);
   }

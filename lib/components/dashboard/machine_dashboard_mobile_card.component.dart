@@ -12,20 +12,23 @@ import 'widgets/machine_status_badge.dart';
 import 'widgets/machine_history_chart.dart';
 import 'widgets/machine_quick_actions.dart';
 
-class MachineDashboardCard extends ConsumerStatefulWidget {
+class MachineDashboardMobileCard extends ConsumerStatefulWidget {
   final Machine machine;
   final VoidCallback? onTap;
 
-  const MachineDashboardCard({super.key, required this.machine, this.onTap});
+  const MachineDashboardMobileCard({
+    super.key,
+    required this.machine,
+    this.onTap,
+  });
 
   @override
-  ConsumerState<MachineDashboardCard> createState() =>
-      _MachineDashboardCardState();
+  ConsumerState<MachineDashboardMobileCard> createState() =>
+      _MachineDashboardMobileCardState();
 }
 
-class _MachineDashboardCardState extends ConsumerState<MachineDashboardCard> {
-  bool _isHovered = false;
-
+class _MachineDashboardMobileCardState
+    extends ConsumerState<MachineDashboardMobileCard> {
   bool _isOnline(String? lastCaptureDate) {
     if (lastCaptureDate == null) return false;
     try {
@@ -176,69 +179,65 @@ class _MachineDashboardCardState extends ConsumerState<MachineDashboardCard> {
     final String relativeTime = _getRelativeTime(lastCaptureDate);
     final String fullTime = _getFullTime(lastCaptureDate);
 
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      onEnter: (_) => setState(() => _isHovered = true),
-      onExit: (_) => setState(() => _isHovered = false),
-      child: GestureDetector(
-        onTap: widget.onTap,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          curve: Curves.easeOut,
-          transform: Matrix4.translationValues(0, _isHovered ? -4 : 0, 0),
+    return GestureDetector(
+      onTap: widget.onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOut,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: [
+            BoxShadow(
+              color: isOnline
+                  ? AppColors.water.withValues(alpha: 0.2)
+                  : AppColors.shadow.withValues(alpha: 0.1),
+              blurRadius: 12,
+              offset: const Offset(0, 6),
+              spreadRadius: isOnline ? 2 : 0,
+            ),
+          ],
+        ),
+        child: Container(
+          padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
+            color: AppColors.surface,
             borderRadius: BorderRadius.circular(24),
-            boxShadow: [
-              BoxShadow(
-                color: isOnline
-                    ? AppColors.water.withValues(alpha: 0.2)
-                    : _isHovered
-                    ? AppColors.primary.withValues(alpha: 0.15)
-                    : AppColors.shadow.withValues(alpha: 0.1),
-                blurRadius: _isHovered ? 25 : 12,
-                offset: Offset(0, _isHovered ? 12 : 6),
-                spreadRadius: isOnline ? 2 : 0,
+            border: Border.all(
+              color: AppColors.border.withValues(alpha: 0.6),
+              width: 1.5,
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildHeader(isOnline, relativeTime, fullTime),
+              const SizedBox(height: 12),
+              if (latestDataAsync.asData?.value != null) ...[
+                MachineMetricChips(data: latestDataAsync.asData!.value),
+                const SizedBox(height: 12),
+              ],
+              Expanded(
+                child: MachineHistoryChart(
+                  historyData: historyDataAsync,
+                  isOnline: isOnline,
+                  lastSeenRelative: relativeTime,
+                  relativeTime: relativeTime,
+                ),
+              ),
+              const SizedBox(height: 12),
+              MachineQuickActions(
+                isVisible: true,
+                onView: () =>
+                    context.push('/dashboard/machine/${widget.machine.id}'),
+                onDelete: () => _confirmDelete(context),
+                iconSize: 20,
+                fontSize: 13,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 8,
+                ),
               ),
             ],
-          ),
-          child: Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: AppColors.surface,
-              borderRadius: BorderRadius.circular(24),
-              border: Border.all(
-                color: _isHovered
-                    ? AppColors.primary.withValues(alpha: 0.4)
-                    : AppColors.border.withValues(alpha: 0.6),
-                width: 1.5,
-              ),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildHeader(isOnline, relativeTime, fullTime),
-                const SizedBox(height: 12),
-                if (latestDataAsync.asData?.value != null) ...[
-                  MachineMetricChips(data: latestDataAsync.asData!.value),
-                  const SizedBox(height: 12),
-                ],
-                Expanded(
-                  child: MachineHistoryChart(
-                    historyData: historyDataAsync,
-                    isOnline: isOnline,
-                    lastSeenRelative: relativeTime,
-                    relativeTime: relativeTime,
-                  ),
-                ),
-                if (_isHovered) const SizedBox(height: 12),
-                MachineQuickActions(
-                  isVisible: _isHovered,
-                  onView: () =>
-                      context.push('/dashboard/machine/${widget.machine.id}'),
-                  onDelete: () => _confirmDelete(context),
-                ),
-              ],
-            ),
           ),
         ),
       ),
