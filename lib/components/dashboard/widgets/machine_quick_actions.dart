@@ -26,7 +26,9 @@ class MachineQuickActions extends StatelessWidget {
     return AnimatedOpacity(
       duration: const Duration(milliseconds: 200),
       opacity: isVisible ? 1.0 : 0.0,
-      child: Row(
+      child: Wrap(
+        spacing: 8,
+        runSpacing: 8,
         children: [
           _ActionButton(
             icon: Icons.visibility_rounded,
@@ -36,7 +38,6 @@ class MachineQuickActions extends StatelessWidget {
             fontSize: fontSize,
             padding: padding,
           ),
-          const SizedBox(width: 8),
           _ActionButton(
             icon: Icons.settings_rounded,
             label: 'Config',
@@ -45,7 +46,6 @@ class MachineQuickActions extends StatelessWidget {
             fontSize: fontSize,
             padding: padding,
           ),
-          const SizedBox(width: 8),
           _ActionButton(
             icon: Icons.delete_outline_rounded,
             label: 'Eliminar',

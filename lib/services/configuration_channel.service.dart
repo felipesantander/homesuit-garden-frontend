@@ -18,6 +18,17 @@ class ConfigurationChannelService {
         .toList();
   }
 
+  /// GET /api/configuration-channels/?machine={machineId}
+  Future<List<Map<String, dynamic>>> fetchByMachine(String machineId) async {
+    final response = await _dio.get(
+      '/api/configuration-channels/',
+      queryParameters: {'machine': machineId},
+    );
+    return (response.data as List)
+        .map((json) => json as Map<String, dynamic>)
+        .toList();
+  }
+
   /// POST /api/configuration-channels/
   Future<Map<String, dynamic>> create({
     required String machineId,

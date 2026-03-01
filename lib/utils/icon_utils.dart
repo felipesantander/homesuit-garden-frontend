@@ -57,8 +57,9 @@ class IconUtils {
       }
       if (lowerName.contains('flow')) return Icons.waves_rounded;
       if (lowerName.contains('light')) return Icons.light_mode_rounded;
-      if (lowerName.contains('batt'))
+      if (lowerName.contains('batt')) {
         return Icons.battery_charging_full_rounded;
+      }
       if (lowerName.contains('wifi')) return Icons.wifi_rounded;
     }
 

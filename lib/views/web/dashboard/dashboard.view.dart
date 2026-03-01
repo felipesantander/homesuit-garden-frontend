@@ -11,6 +11,7 @@ import 'package:garden_homesuit/providers/gardens.provider.dart';
 import 'package:garden_homesuit/models/machine.model.dart';
 import 'package:garden_homesuit/components/dashboard/widgets/global_filters.component.dart';
 import 'package:garden_homesuit/providers/dashboard_filters.provider.dart';
+import 'package:garden_homesuit/models/garden.model.dart';
 
 class DashboardView extends ConsumerWidget {
   const DashboardView({super.key});
@@ -144,10 +145,12 @@ class _GroupedMachinesList extends ConsumerWidget {
 
     final filteredMachines = machines.where((machine) {
       // Find the garden for this machine to check its business
-      final garden = gardens.firstWhere(
-        (g) => g.idGarden == machine.garden || g.name == machine.garden,
-        orElse: () => gardens.first,
-      );
+      final garden = gardens.isEmpty
+          ? null
+          : gardens.cast<Garden?>().firstWhere(
+              (g) => g?.idGarden == machine.garden || g?.name == machine.garden,
+              orElse: () => null,
+            );
 
       final gardenMatches = (gardens.any(
         (g) => g.idGarden == machine.garden || g.name == machine.garden,
@@ -158,14 +161,14 @@ class _GroupedMachinesList extends ConsumerWidget {
 
       // 1. Business Filter
       if (selectedBusinessIds.isNotEmpty) {
-        if (!selectedBusinessIds.contains(garden.business)) {
+        if (garden == null || !selectedBusinessIds.contains(garden.business)) {
           return false;
         }
       }
 
       // 2. Garden Filter
       if (selectedGardenIds.isNotEmpty) {
-        if (!selectedGardenIds.contains(garden.idGarden)) {
+        if (garden == null || !selectedGardenIds.contains(garden.idGarden)) {
           return false;
         }
       }
@@ -182,11 +185,14 @@ class _GroupedMachinesList extends ConsumerWidget {
     for (final machine in filteredMachines) {
       String name = 'Otros Dispositivos';
       if (gardens.isNotEmpty) {
-        final g = gardens.firstWhere(
-          (g) => g.idGarden == machine.garden || g.name == machine.garden,
-          orElse: () => gardens.first,
+        final g = gardens.cast<Garden?>().firstWhere(
+          (g) => g?.idGarden == machine.garden || g?.name == machine.garden,
+          orElse: () => null,
         );
-        name = g.name;
+        name = g?.name ?? machine.garden ?? 'Otros Dispositivos';
+      } else {
+        // Fallback for when there are no gardens at all
+        name = machine.garden ?? 'Otros Dispositivos';
       }
       grouped.putIfAbsent(name, () => []).add(machine);
     }
@@ -244,7 +250,8 @@ class _GroupedMachinesList extends ConsumerWidget {
               physics: const NeverScrollableScrollPhysics(),
               gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                 maxCrossAxisExtent: 320,
-                mainAxisExtent: 360, // Back to 360 for upcoming redesign
+                mainAxisExtent:
+                    400, // Increased to 400 to prevent chart overflows when hovering
                 crossAxisSpacing: 20,
                 mainAxisSpacing: 20,
               ),

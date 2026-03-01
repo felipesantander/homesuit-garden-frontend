@@ -17,3 +17,13 @@ final configurationChannelsProvider =
       final service = ref.read(configurationChannelServiceProvider);
       return service.fetchAll();
     });
+
+final configurationChannelsByMachineProvider =
+    FutureProvider.family<List<Map<String, dynamic>>, String>((
+      ref,
+      machineId,
+    ) async {
+      final service = ref.read(configurationChannelServiceProvider);
+      final data = await service.fetchByMachine(machineId);
+      return data;
+    });

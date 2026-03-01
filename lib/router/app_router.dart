@@ -51,6 +51,12 @@ import '../views/web/roles_permissions/permission_form/permission_form.view.dart
 import '../views/web/dashboard/add_sensor/add_sensor.view.dart'
     deferred as add_sensor
     show AddSensorView;
+import '../views/web/alerts/alerts_view.dart'
+    deferred as alerts
+    show AlertsView;
+import '../views/web/alerts/add_alert.view.dart'
+    deferred as add_alert
+    show AddAlertView;
 import '../providers/auth.provider.dart';
 import '../utils/deferred_widget.dart';
 
@@ -163,6 +169,30 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               loader: add_sensor.loadLibrary,
               builder: () => add_sensor.AddSensorView(),
             ),
+          ),
+          GoRoute(
+            path: '/alerts',
+            builder: (context, state) => DeferredWidget(
+              loader: alerts.loadLibrary,
+              builder: () => alerts.AlertsView(),
+            ),
+          ),
+          GoRoute(
+            path: '/alerts/new',
+            builder: (context, state) => DeferredWidget(
+              loader: add_alert.loadLibrary,
+              builder: () => add_alert.AddAlertView(),
+            ),
+          ),
+          GoRoute(
+            path: '/alerts/edit/:id',
+            builder: (context, state) {
+              final id = state.pathParameters['id'];
+              return DeferredWidget(
+                loader: add_alert.loadLibrary,
+                builder: () => add_alert.AddAlertView(alertId: id),
+              );
+            },
           ),
         ],
       ),

@@ -129,7 +129,7 @@ class _MobileMachinesList extends StatelessWidget {
         return Padding(
           padding: const EdgeInsets.only(bottom: 16),
           child: SizedBox(
-            height: 360,
+            height: 400,
             child: MachineDashboardMobileCard(
               machine: machine,
               onTap: () {

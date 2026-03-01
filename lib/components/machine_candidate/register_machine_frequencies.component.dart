@@ -104,7 +104,7 @@ class RegisterMachineFrequencies extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         DropdownButtonFormField<String>(
-          value:
+          initialValue:
               (dashboardFrequency != null &&
                   selectedFrequencies.contains(dashboardFrequency))
               ? dashboardFrequency

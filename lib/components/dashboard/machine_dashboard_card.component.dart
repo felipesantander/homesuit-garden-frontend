@@ -219,7 +219,10 @@ class _MachineDashboardCardState extends ConsumerState<MachineDashboardCard> {
                 _buildHeader(isOnline, relativeTime, fullTime),
                 const SizedBox(height: 12),
                 if (latestDataAsync.asData?.value != null) ...[
-                  MachineMetricChips(data: latestDataAsync.asData!.value),
+                  MachineMetricChips(
+                    data: latestDataAsync.asData!.value,
+                    machine: widget.machine,
+                  ),
                   const SizedBox(height: 12),
                 ],
                 Expanded(

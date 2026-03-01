@@ -115,6 +115,13 @@ class Sidebar extends ConsumerWidget {
             isCollapsed: isCollapsed,
           ),
           _SidebarItem(
+            icon: Icons.notification_important_outlined,
+            label: 'Alertas',
+            isSelected: currentLocation == '/alerts',
+            onTap: () => context.go('/alerts'),
+            isCollapsed: isCollapsed,
+          ),
+          _SidebarItem(
             icon: Icons.security_rounded,
             label: 'Roles y Permisos',
             isSelected: currentLocation == '/roles-permissions',

@@ -35,7 +35,7 @@ class MachineHistoryChart extends StatelessWidget {
 
         return SfCartesianChart(
           plotAreaBorderWidth: 0,
-          margin: EdgeInsets.zero,
+          margin: const EdgeInsets.all(8),
           primaryXAxis: DateTimeAxis(
             isVisible: true,
             labelStyle: const TextStyle(
@@ -63,11 +63,11 @@ class MachineHistoryChart extends StatelessWidget {
           ),
           legend: const Legend(
             isVisible: true,
-            position: LegendPosition.top,
+            position: LegendPosition.bottom,
             overflowMode: LegendItemOverflowMode.wrap,
             itemPadding: 8,
             textStyle: TextStyle(
-              fontSize: 12,
+              fontSize: 10,
               fontFamily: 'Roboto',
               color: AppColors.textSecondary,
             ),

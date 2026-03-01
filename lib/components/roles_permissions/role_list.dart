@@ -71,7 +71,7 @@ class RoleList extends ConsumerWidget {
     return ListView.separated(
       padding: const EdgeInsets.all(16),
       itemCount: roles.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 12),
+      separatorBuilder: (_, _) => const SizedBox(height: 12),
       itemBuilder: (context, index) {
         final role = roles[index];
         return Container(
