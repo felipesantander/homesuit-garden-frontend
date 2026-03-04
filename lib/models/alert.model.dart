@@ -74,11 +74,15 @@ class AlertCriteria {
   final String channel;
   final String condition;
   final double threshold;
+  final String? logicalOperator;
+  final int? order;
 
   AlertCriteria({
     required this.channel,
     required this.condition,
     required this.threshold,
+    this.logicalOperator,
+    this.order,
   });
 
   factory AlertCriteria.fromJson(Map<String, dynamic> json) {
@@ -86,10 +90,23 @@ class AlertCriteria {
       channel: json['channel'] as String? ?? '',
       condition: json['condition'] as String? ?? '',
       threshold: (json['threshold'] as num? ?? 0.0).toDouble(),
+      logicalOperator: json['logical_operator'] as String?,
+      order: json['order'] as int?,
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {'channel': channel, 'condition': condition, 'threshold': threshold};
+    final map = <String, dynamic>{
+      'channel': channel,
+      'condition': condition,
+      'threshold': threshold,
+    };
+    if (logicalOperator != null) {
+      map['logical_operator'] = logicalOperator;
+    }
+    if (order != null) {
+      map['order'] = order;
+    }
+    return map;
   }
 }

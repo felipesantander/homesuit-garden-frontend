@@ -6,7 +6,6 @@ import 'package:garden_homesuit/models/user.model.dart';
 import 'package:garden_homesuit/providers/users.provider.dart';
 import 'package:garden_homesuit/providers/roles.provider.dart';
 import 'package:garden_homesuit/providers/businesses.provider.dart';
-import 'package:garden_homesuit/styles/button_styles.dart';
 import 'package:garden_homesuit/styles/input_styles.dart';
 import 'package:go_router/go_router.dart';
 
@@ -134,14 +133,17 @@ class UserFormBody extends HookConsumerWidget {
             title: 'Información Personal',
             icon: Icons.person_pin_rounded,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 24),
           Row(
             children: [
               Expanded(
                 child: TextFormField(
                   controller: firstNameController,
-                  style: const TextStyle(color: AppColors.textPrimary),
-                  decoration: AppInputStyles.standard(
+                  style: const TextStyle(
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  decoration: AppInputStyles.glass(
                     labelText: 'Nombres',
                     prefixIcon: const Icon(
                       Icons.badge_outlined,
@@ -150,12 +152,15 @@ class UserFormBody extends HookConsumerWidget {
                   ),
                 ),
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: 20),
               Expanded(
                 child: TextFormField(
                   controller: lastNameController,
-                  style: const TextStyle(color: AppColors.textPrimary),
-                  decoration: AppInputStyles.standard(
+                  style: const TextStyle(
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  decoration: AppInputStyles.glass(
                     labelText: 'Apellidos',
                     prefixIcon: const Icon(
                       Icons.badge_outlined,
@@ -166,12 +171,15 @@ class UserFormBody extends HookConsumerWidget {
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
           TextFormField(
             controller: emailController,
-            style: const TextStyle(color: AppColors.textPrimary),
+            style: const TextStyle(
+              color: AppColors.textPrimary,
+              fontWeight: FontWeight.w600,
+            ),
             keyboardType: TextInputType.emailAddress,
-            decoration: AppInputStyles.standard(
+            decoration: AppInputStyles.glass(
               labelText: 'Correo Electrónico',
               prefixIcon: const Icon(
                 Icons.email_outlined,
@@ -179,22 +187,25 @@ class UserFormBody extends HookConsumerWidget {
               ),
             ),
           ),
-          const SizedBox(height: 32),
+          const SizedBox(height: 48),
 
           // Sección: Credenciales de Acceso
           const _SectionHeader(
             title: 'Credenciales de Acceso',
             icon: Icons.vpn_key_rounded,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 24),
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
                 child: TextFormField(
                   controller: usernameController,
-                  style: const TextStyle(color: AppColors.textPrimary),
-                  decoration: AppInputStyles.standard(
+                  style: const TextStyle(
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  decoration: AppInputStyles.glass(
                     labelText: 'Username',
                     prefixIcon: const Icon(
                       Icons.person_outline,
@@ -209,16 +220,19 @@ class UserFormBody extends HookConsumerWidget {
                   },
                 ),
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: 20),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     TextFormField(
                       controller: passwordController,
-                      style: const TextStyle(color: AppColors.textPrimary),
+                      style: const TextStyle(
+                        color: AppColors.textPrimary,
+                        fontWeight: FontWeight.w600,
+                      ),
                       obscureText: true,
-                      decoration: AppInputStyles.standard(
+                      decoration: AppInputStyles.glass(
                         labelText: 'Contraseña',
                         prefixIcon: const Icon(
                           Icons.lock_outline,
@@ -235,12 +249,13 @@ class UserFormBody extends HookConsumerWidget {
                     ),
                     if (user != null)
                       const Padding(
-                        padding: EdgeInsets.only(top: 8.0, left: 12.0),
+                        padding: EdgeInsets.only(top: 8.0, left: 16.0),
                         child: Text(
                           'Déjalo en blanco si no deseas actualizar tu contraseña actual.',
                           style: TextStyle(
                             color: AppColors.textMuted,
                             fontSize: 12,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                       ),
@@ -250,21 +265,28 @@ class UserFormBody extends HookConsumerWidget {
             ],
           ),
 
-          const SizedBox(height: 32),
+          const SizedBox(height: 48),
 
           // Sección: Permisos de Sistema
           const _SectionHeader(
             title: 'Permisos y Accesos',
             icon: Icons.admin_panel_settings_rounded,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 24),
           rolesAsync.when(
             data: (roles) {
               return DropdownButtonFormField<String>(
                 initialValue: selectedRoleId.value,
                 dropdownColor: AppColors.surface,
-                style: const TextStyle(color: AppColors.textPrimary),
-                decoration: AppInputStyles.standard(
+                icon: const Icon(
+                  Icons.keyboard_arrow_down_rounded,
+                  color: AppColors.primary,
+                ),
+                style: const TextStyle(
+                  color: AppColors.textPrimary,
+                  fontWeight: FontWeight.w600,
+                ),
+                decoration: AppInputStyles.glass(
                   labelText: 'Asignar Rol (Opcional)',
                   prefixIcon: const Icon(
                     Icons.security_outlined,
@@ -289,13 +311,13 @@ class UserFormBody extends HookConsumerWidget {
                 onChanged: (val) => selectedRoleId.value = val,
               );
             },
-            loading: () => const CircularProgressIndicator(),
+            loading: () => const Center(child: CircularProgressIndicator()),
             error: (err, _) => Text(
               'Error cargando roles: $err',
               style: const TextStyle(color: AppColors.negative),
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
           businessesAsync.when(
             data: (businesses) {
               if (businesses.isEmpty) {
@@ -306,13 +328,21 @@ class UserFormBody extends HookConsumerWidget {
               }
               return Container(
                 decoration: BoxDecoration(
-                  border: Border.all(color: AppColors.border),
-                  borderRadius: BorderRadius.circular(12),
+                  color: AppColors.surface.withValues(alpha: 0.3),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: AppColors.border.withValues(alpha: 0.4),
+                  ),
                 ),
                 clipBehavior: Clip.antiAlias,
                 child: ExpansionTile(
                   collapsedBackgroundColor: Colors.transparent,
-                  backgroundColor: AppColors.primary.withValues(alpha: 0.02),
+                  backgroundColor: AppColors.primary.withValues(alpha: 0.05),
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.zero,
+                  ),
+                  iconColor: AppColors.primary,
+                  collapsedIconColor: AppColors.textSecondary,
                   leading: const Icon(
                     Icons.business_outlined,
                     color: AppColors.primary,
@@ -321,28 +351,45 @@ class UserFormBody extends HookConsumerWidget {
                     'Asignar Negocios (Opcional)',
                     style: TextStyle(
                       color: AppColors.textPrimary,
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.w900,
+                      fontSize: 16,
                     ),
                   ),
                   subtitle: Text(
                     '${selectedBusinessIds.value.length} Negocios seleccionados',
-                    style: const TextStyle(color: AppColors.primary),
+                    style: const TextStyle(
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 13,
+                    ),
                   ),
-                  childrenPadding: const EdgeInsets.all(16),
+                  childrenPadding: const EdgeInsets.all(20),
                   expandedCrossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     ConstrainedBox(
-                      constraints: const BoxConstraints(maxHeight: 200),
+                      constraints: const BoxConstraints(maxHeight: 250),
                       child: SingleChildScrollView(
                         child: Wrap(
-                          spacing: 8.0,
-                          runSpacing: 8.0,
+                          spacing: 10.0,
+                          runSpacing: 10.0,
                           children: businesses.map((bus) {
                             final isSelected = selectedBusinessIds.value
                                 .contains(bus.idBusiness);
                             return FilterChip(
                               label: Text(bus.name),
                               selected: isSelected,
+                              side: BorderSide(
+                                color: isSelected
+                                    ? AppColors.primary.withValues(alpha: 0.5)
+                                    : AppColors.border.withValues(alpha: 0.3),
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 8,
+                              ),
                               onSelected: (bool selected) {
                                 final currentList = List<String>.from(
                                   selectedBusinessIds.value,
@@ -359,6 +406,10 @@ class UserFormBody extends HookConsumerWidget {
                               ),
                               checkmarkColor: AppColors.primary,
                               labelStyle: TextStyle(
+                                fontSize: 13,
+                                fontWeight: isSelected
+                                    ? FontWeight.w900
+                                    : FontWeight.w600,
                                 color: isSelected
                                     ? AppColors.primary
                                     : AppColors.textPrimary,
@@ -372,13 +423,13 @@ class UserFormBody extends HookConsumerWidget {
                 ),
               );
             },
-            loading: () => const CircularProgressIndicator(),
+            loading: () => const Center(child: CircularProgressIndicator()),
             error: (err, _) => Text(
               'Error cargando negocios: $err',
               style: const TextStyle(color: AppColors.negative),
             ),
           ),
-          const SizedBox(height: 48),
+          const SizedBox(height: 64),
 
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
@@ -387,39 +438,71 @@ class UserFormBody extends HookConsumerWidget {
                 onPressed: () => context.pop(),
                 style: TextButton.styleFrom(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 16,
+                    horizontal: 32,
+                    vertical: 24,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
                   ),
                 ),
                 child: const Text(
                   'CANCELAR',
                   style: TextStyle(
                     color: AppColors.textMuted,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 1.2,
                   ),
                 ),
               ),
-              const SizedBox(width: 16),
-              ElevatedButton(
-                onPressed: isSubmitting.value ? null : saveUser,
-                style: AppButtonStyles.primary.copyWith(
-                  padding: WidgetStateProperty.all(
-                    const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                  ),
+              const SizedBox(width: 24),
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.primary.withValues(alpha: 0.3),
+                      blurRadius: 20,
+                      offset: const Offset(0, 10),
+                    ),
+                  ],
                 ),
-                child: isSubmitting.value
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(
-                          color: Colors.white,
-                          strokeWidth: 2,
+                child: ElevatedButton(
+                  onPressed: isSubmitting.value ? null : saveUser,
+                  style:
+                      ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 56,
+                          vertical: 24,
                         ),
-                      )
-                    : Text(
-                        user == null ? 'CREAR USUARIO' : 'GUARDAR CAMBIOS',
-                        style: const TextStyle(fontWeight: FontWeight.bold),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        elevation: 0,
+                      ).copyWith(
+                        overlayColor: WidgetStateProperty.all(
+                          Colors.white.withValues(alpha: 0.1),
+                        ),
                       ),
+                  child: isSubmitting.value
+                      ? const SizedBox(
+                          height: 24,
+                          width: 24,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 3,
+                          ),
+                        )
+                      : Text(
+                          user == null ? 'CREAR USUARIO' : 'GUARDAR CAMBIOS',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 1.1,
+                            fontSize: 16,
+                          ),
+                        ),
+                ),
               ),
             ],
           ),
@@ -437,26 +520,47 @@ class _SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Icon(icon, color: AppColors.primary, size: 20),
-        const SizedBox(width: 8),
-        Text(
-          title,
-          style: const TextStyle(
-            color: AppColors.textPrimary,
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: AppColors.primary.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: AppColors.primary.withValues(alpha: 0.2),
+              ),
+            ),
+            child: Icon(icon, color: AppColors.primary, size: 24),
           ),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: Divider(
-            color: AppColors.border.withValues(alpha: 0.5),
-            thickness: 1,
+          const SizedBox(width: 16),
+          Text(
+            title,
+            style: const TextStyle(
+              color: AppColors.textPrimary,
+              fontSize: 22,
+              fontWeight: FontWeight.w900,
+              letterSpacing: -0.8,
+            ),
           ),
-        ),
-      ],
+          const SizedBox(width: 24),
+          Expanded(
+            child: Container(
+              height: 1,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    AppColors.border.withValues(alpha: 0.5),
+                    AppColors.border.withValues(alpha: 0.0),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

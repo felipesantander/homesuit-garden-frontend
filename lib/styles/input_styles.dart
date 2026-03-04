@@ -46,6 +46,51 @@ class AppInputStyles {
     );
   }
 
+  static InputDecoration glass({
+    String? labelText,
+    String? hintText,
+    String? helperText,
+    String? errorText,
+    Widget? prefixIcon,
+    Widget? suffixIcon,
+  }) {
+    return InputDecoration(
+      labelText: labelText,
+      hintText: hintText,
+      helperText: helperText,
+      errorText: errorText,
+      prefixIcon: prefixIcon,
+      suffixIcon: suffixIcon,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: BorderSide(color: AppColors.border.withValues(alpha: 0.4)),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: BorderSide(color: AppColors.border.withValues(alpha: 0.4)),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: const BorderSide(color: AppColors.primary, width: 2),
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: const BorderSide(color: AppColors.negative),
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: const BorderSide(color: AppColors.negative, width: 2),
+      ),
+      filled: true,
+      fillColor: AppColors.surface.withValues(alpha: 0.4),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+      labelStyle: const TextStyle(
+        color: AppColors.textSecondary,
+        fontWeight: FontWeight.w500,
+      ),
+    );
+  }
+
   static InputDecoration rounded({
     String? labelText,
     String? hintText,

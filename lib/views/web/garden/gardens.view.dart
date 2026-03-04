@@ -104,61 +104,94 @@ class _Header extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Gestión de Jardines',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: AppColors.primary.withValues(alpha: 0.2),
                   ),
                 ),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    const Text(
-                      'Administra tus espacios de cultivo',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    BusinessFilter(
-                      selectedIds: selectedBusinessIds,
-                      onApplied: onFilterApplied,
-                    ),
-                  ],
+                child: const Icon(
+                  Icons.eco_rounded,
+                  color: AppColors.primary,
+                  size: 28,
                 ),
-              ],
-            ),
+              ),
+              const SizedBox(width: 20),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Gestión de Jardines',
+                    style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.w900,
+                      color: AppColors.textPrimary,
+                      letterSpacing: -0.5,
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      const Text(
+                        'Administra tus espacios de cultivo',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: AppColors.textSecondary,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      BusinessFilter(
+                        selectedIds: selectedBusinessIds,
+                        onApplied: onFilterApplied,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
           ),
           Row(
             children: [
               IconButton(
                 onPressed: onRefresh,
-                icon: const Icon(Icons.refresh, color: AppColors.primary),
+                icon: const Icon(Icons.refresh_rounded),
+                color: AppColors.primary,
                 tooltip: 'Refrescar',
+                style: IconButton.styleFrom(
+                  backgroundColor: AppColors.primary.withValues(alpha: 0.1),
+                  padding: const EdgeInsets.all(12),
+                ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 16),
               ElevatedButton.icon(
                 onPressed: onAdd,
-                icon: const Icon(Icons.library_add_rounded),
-                label: const Text('NUEVO JARDÍN'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 12,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+                icon: const Icon(Icons.library_add_rounded, size: 20),
+                label: const Text(
+                  'NUEVO JARDÍN',
+                  style: TextStyle(fontWeight: FontWeight.w900),
                 ),
+                style:
+                    ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 20,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      elevation: 0,
+                    ).copyWith(
+                      overlayColor: WidgetStateProperty.all(
+                        Colors.white.withValues(alpha: 0.1),
+                      ),
+                    ),
               ),
             ],
           ),

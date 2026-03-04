@@ -59,84 +59,177 @@ class _AlertCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Container(
-      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: AppColors.surface.withValues(alpha: 0.3),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppColors.border.withValues(alpha: 0.4)),
+      ),
+      child: IntrinsicHeight(
+        child: Row(
+          children: [
+            // Status Indicator Bar
+            Container(
+              width: 4,
+              margin: const EdgeInsets.symmetric(vertical: 16),
+              decoration: BoxDecoration(
+                color: alert.isActive
+                    ? AppColors.primary
+                    : AppColors.textSecondary.withValues(alpha: 0.2),
+                borderRadius: const BorderRadius.horizontal(
+                  right: Radius.circular(4),
+                ),
+              ),
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Row(
+                  children: [
+                    _buildIcon(),
+                    const SizedBox(width: 20),
+                    _buildMainInfo(),
+                    _buildActions(context, ref),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildIcon() {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: alert.isActive
+            ? AppColors.primary.withValues(alpha: 0.1)
+            : AppColors.textSecondary.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.shadow.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+      ),
+      child: Icon(
+        alert.isActive ? Icons.bolt_rounded : Icons.notifications_off_rounded,
+        color: alert.isActive ? AppColors.primary : AppColors.textMuted,
+        size: 28,
+      ),
+    );
+  }
+
+  Widget _buildMainInfo() {
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            alert.name,
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w900,
+              color: AppColors.textPrimary,
+              letterSpacing: -0.5,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              _buildBadge(
+                Icons.settings_input_component_rounded,
+                '${alert.machines.length} Máquinas',
+              ),
+              _buildBadge(
+                Icons.rule_rounded,
+                '${alert.criteria.length} Criterios',
+              ),
+              _buildBadge(Icons.timer_rounded, '${alert.duration}s Persist.'),
+            ],
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildBadge(IconData icon, String text) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: AppColors.textSecondary.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: AppColors.border.withValues(alpha: 0.3)),
       ),
       child: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: alert.isActive
-                  ? AppColors.primarySoft
-                  : AppColors.background,
-              shape: BoxShape.circle,
+          Icon(icon, size: 12, color: AppColors.textSecondary),
+          const SizedBox(width: 6),
+          Text(
+            text,
+            style: const TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textSecondary,
             ),
-            child: Icon(
-              Icons.notifications_active_rounded,
-              color: alert.isActive
-                  ? AppColors.primary
-                  : AppColors.textSecondary,
-            ),
-          ),
-          const SizedBox(width: 20),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  alert.name,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  '${alert.machines.length} Máquinas · ${alert.criteria.length} Criterios · Persistencia: ${alert.duration}s',
-                  style: const TextStyle(color: AppColors.textSecondary),
-                ),
-              ],
-            ),
-          ),
-          Switch(
-            value: alert.isActive,
-            activeThumbColor: AppColors.primary,
-            onChanged: (val) {
-              ref.read(alertsProvider.notifier).toggleAlert(alert.id, val);
-            },
-          ),
-          const SizedBox(width: 8),
-          IconButton(
-            icon: const Icon(Icons.edit_rounded, color: AppColors.primary),
-            tooltip: 'Editar alerta',
-            onPressed: () {
-              context.push('/alerts/edit/${alert.id}');
-            },
-          ),
-          IconButton(
-            icon: const Icon(
-              Icons.delete_outline_rounded,
-              color: Colors.redAccent,
-            ),
-            tooltip: 'Eliminar alerta',
-            onPressed: () {
-              ref.read(alertsProvider.notifier).deleteAlert(alert.id);
-            },
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildActions(BuildContext context, WidgetRef ref) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text(
+              'ACTIVA',
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w900,
+                color: AppColors.textSecondary,
+                letterSpacing: 1,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Transform.scale(
+              scale: 0.8,
+              child: Switch(
+                value: alert.isActive,
+                activeTrackColor: AppColors.primary.withValues(alpha: 0.2),
+                activeColor: AppColors.primary,
+                onChanged: (val) {
+                  ref.read(alertsProvider.notifier).toggleAlert(alert.id, val);
+                },
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(width: 16),
+        const VerticalDivider(width: 1, indent: 10, endIndent: 10),
+        const SizedBox(width: 16),
+        IconButton(
+          icon: const Icon(
+            Icons.edit_note_rounded,
+            color: AppColors.primary,
+            size: 28,
+          ),
+          tooltip: 'Editar alerta',
+          onPressed: () => context.push('/alerts/edit/${alert.id}'),
+        ),
+        IconButton(
+          icon: Icon(
+            Icons.delete_sweep_rounded,
+            color: Colors.red.withValues(alpha: 0.7),
+            size: 28,
+          ),
+          tooltip: 'Eliminar alerta',
+          onPressed: () =>
+              ref.read(alertsProvider.notifier).deleteAlert(alert.id),
+        ),
+      ],
     );
   }
 }

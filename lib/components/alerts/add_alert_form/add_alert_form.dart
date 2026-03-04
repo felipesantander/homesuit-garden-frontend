@@ -95,7 +95,17 @@ class _AddAlertFormState extends ConsumerState<AddAlertForm> {
         duration: int.parse(_durationController.text),
         dataFrequency: _selectedFrequency,
         contacts: _contacts.where((c) => c.phone.isNotEmpty).toList(),
-        criteria: _criteria,
+        criteria: _criteria.asMap().entries.map((e) {
+          final i = e.key;
+          final c = e.value;
+          return AlertCriteria(
+            channel: c.channel,
+            condition: c.condition,
+            threshold: c.threshold,
+            logicalOperator: i == 0 ? null : c.logicalOperator ?? 'AND',
+            order: i,
+          );
+        }).toList(),
         isActive: true,
       );
 

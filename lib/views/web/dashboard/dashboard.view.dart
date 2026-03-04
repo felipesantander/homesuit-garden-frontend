@@ -28,28 +28,49 @@ class DashboardView extends ConsumerWidget {
           children: [
             // Top bar
             Padding(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(24),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  Row(
                     children: [
-                      Text(
-                        'Dashboard',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimary,
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: AppColors.primary.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: AppColors.primary.withValues(alpha: 0.2),
+                          ),
+                        ),
+                        child: const Icon(
+                          Icons.dashboard_customize_rounded,
+                          color: AppColors.primary,
+                          size: 28,
                         ),
                       ),
-                      SizedBox(height: 4),
-                      Text(
-                        'Panel de Monitoreo IoT',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: AppColors.textSecondary,
-                        ),
+                      const SizedBox(width: 20),
+                      const Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Dashboard',
+                            style: TextStyle(
+                              fontSize: 32,
+                              fontWeight: FontWeight.w900,
+                              color: AppColors.textPrimary,
+                              letterSpacing: -0.5,
+                            ),
+                          ),
+                          Text(
+                            'Panel de Monitoreo IoT',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: AppColors.textSecondary,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -57,46 +78,60 @@ class DashboardView extends ConsumerWidget {
                     children: [
                       ElevatedButton.icon(
                         onPressed: () => context.push('/dashboard/add-sensor'),
-                        icon: const Icon(Icons.add_task_rounded, size: 18),
+                        icon: const Icon(Icons.add_task_rounded, size: 20),
                         label: const Text(
                           'NUEVO SENSOR',
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          style: TextStyle(fontWeight: FontWeight.w900),
                         ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primary,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 12,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          elevation: 0,
-                        ),
+                        style:
+                            ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.primary,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 24,
+                                vertical: 20,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              elevation: 0,
+                            ).copyWith(
+                              overlayColor: WidgetStateProperty.all(
+                                Colors.white.withValues(alpha: 0.1),
+                              ),
+                            ),
                       ),
                       const SizedBox(width: 16),
                       IconButton(
-                        icon: const Icon(
-                          Icons.refresh,
-                          color: AppColors.primary,
-                        ),
+                        icon: const Icon(Icons.refresh_rounded),
+                        color: AppColors.primary,
                         onPressed: () =>
                             ref.read(machinesProvider.notifier).refresh(),
                         tooltip: 'Recargar Datos',
-                      ),
-                      const SizedBox(width: 8),
-                      IconButton(
-                        icon: const Icon(
-                          Icons.logout,
-                          color: AppColors.textSecondary,
+                        style: IconButton.styleFrom(
+                          backgroundColor: AppColors.primary.withValues(
+                            alpha: 0.1,
+                          ),
+                          padding: const EdgeInsets.all(12),
                         ),
+                      ),
+                      const SizedBox(width: 12),
+                      IconButton(
+                        icon: const Icon(Icons.logout_rounded),
+                        color: AppColors.negative,
                         onPressed: () async {
                           await ref.read(logoutActionProvider)();
                           if (context.mounted) {
                             context.go('/login');
                           }
                         },
+                        tooltip: 'Cerrar Sesión',
+                        style: IconButton.styleFrom(
+                          backgroundColor: AppColors.negative.withValues(
+                            alpha: 0.1,
+                          ),
+                          padding: const EdgeInsets.all(12),
+                        ),
                       ),
                     ],
                   ),

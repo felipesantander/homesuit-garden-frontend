@@ -76,20 +76,45 @@ class _Header extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          Row(
             children: [
-              Text(
-                'Gestión de Negocios',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: AppColors.primary.withValues(alpha: 0.2),
+                  ),
+                ),
+                child: const Icon(
+                  Icons.business_center_rounded,
+                  color: AppColors.primary,
+                  size: 28,
                 ),
               ),
-              Text(
-                'Administra la relación entre usuarios y máquinas',
-                style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
+              const SizedBox(width: 20),
+              const Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Gestión de Negocios',
+                    style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.w900,
+                      color: AppColors.textPrimary,
+                      letterSpacing: -0.5,
+                    ),
+                  ),
+                  Text(
+                    'Administra la relación entre usuarios y máquinas',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: AppColors.textSecondary,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -97,25 +122,39 @@ class _Header extends StatelessWidget {
             children: [
               IconButton(
                 onPressed: onRefresh,
-                icon: const Icon(Icons.refresh, color: AppColors.primary),
+                icon: const Icon(Icons.refresh_rounded),
+                color: AppColors.primary,
                 tooltip: 'Refrescar',
+                style: IconButton.styleFrom(
+                  backgroundColor: AppColors.primary.withValues(alpha: 0.1),
+                  padding: const EdgeInsets.all(12),
+                ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 16),
               ElevatedButton.icon(
                 onPressed: onAdd,
-                icon: const Icon(Icons.add),
-                label: const Text('NUEVO NEGOCIO'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 12,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+                icon: const Icon(Icons.add_rounded, size: 20),
+                label: const Text(
+                  'NUEVO NEGOCIO',
+                  style: TextStyle(fontWeight: FontWeight.w900),
                 ),
+                style:
+                    ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 20,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      elevation: 0,
+                    ).copyWith(
+                      overlayColor: WidgetStateProperty.all(
+                        Colors.white.withValues(alpha: 0.1),
+                      ),
+                    ),
               ),
             ],
           ),

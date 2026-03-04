@@ -71,42 +71,66 @@ class _Header extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Candidatos a Máquinas',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: AppColors.primary.withValues(alpha: 0.2),
                   ),
                 ),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    const Text(
-                      'Dispositivos auto-descubiertos',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    BusinessFilter(
-                      selectedIds: selectedBusinessIds,
-                      onApplied: onFilterApplied,
-                    ),
-                  ],
+                child: const Icon(
+                  Icons.sensors_rounded,
+                  color: AppColors.primary,
+                  size: 28,
                 ),
-              ],
-            ),
+              ),
+              const SizedBox(width: 20),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Candidatos a Máquinas',
+                    style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.w900,
+                      color: AppColors.textPrimary,
+                      letterSpacing: -0.5,
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      const Text(
+                        'Dispositivos auto-descubiertos',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: AppColors.textSecondary,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      BusinessFilter(
+                        selectedIds: selectedBusinessIds,
+                        onApplied: onFilterApplied,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
           ),
           IconButton(
             onPressed: onRefresh,
-            icon: const Icon(Icons.refresh, color: AppColors.primary),
+            icon: const Icon(Icons.refresh_rounded),
+            color: AppColors.primary,
             tooltip: 'Refrescar lista',
+            style: IconButton.styleFrom(
+              backgroundColor: AppColors.primary.withValues(alpha: 0.1),
+              padding: const EdgeInsets.all(12),
+            ),
           ),
         ],
       ),

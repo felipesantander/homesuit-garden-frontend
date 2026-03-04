@@ -41,19 +41,23 @@ class SmartSummaryWidget extends ConsumerWidget {
       if (criteria.isEmpty || criteria.any((c) => c.channel.isEmpty)) {
         summary += 'configura los criterios...';
       } else {
-        final critStrings = criteria
-            .map((c) {
-              final ch = channels
-                  .where((Channel ch) => ch.idChannel == c.channel)
-                  .firstOrNull;
-              final name = ch?.name ?? 'Canal Único';
-              final unit = ch != null && ch.unit.isNotEmpty
-                  ? ' ${ch.unit}'
-                  : '';
-              return '$name ${c.condition} ${c.threshold}$unit';
-            })
-            .join(' Y ');
-        summary += 'si $critStrings ';
+        final critStrings = [];
+        for (int i = 0; i < criteria.length; i++) {
+          final c = criteria[i];
+          final ch = channels
+              .where((Channel ch) => ch.idChannel == c.channel)
+              .firstOrNull;
+          final name = ch?.name ?? 'Canal Único';
+          final unit = ch != null && ch.unit.isNotEmpty ? ' ${ch.unit}' : '';
+
+          String part = '$name ${c.condition} ${c.threshold}$unit';
+          if (i > 0 && c.logicalOperator != null) {
+            critStrings.add('${c.logicalOperator} $part');
+          } else {
+            critStrings.add(part);
+          }
+        }
+        summary += 'si ${critStrings.join(' ')} ';
         summary += 'por $duration seg, ';
 
         final validContacts = contacts

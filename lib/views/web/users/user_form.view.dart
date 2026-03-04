@@ -33,11 +33,26 @@ class UserFormView extends ConsumerWidget {
         ),
         error: (err, stack) => Scaffold(
           backgroundColor: AppColors.background,
-          appBar: _buildAppBar(context),
           body: Center(
-            child: Text(
-              'Error cargando usuario: $err',
-              style: const TextStyle(color: AppColors.negative),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(
+                  Icons.error_outline_rounded,
+                  color: AppColors.negative,
+                  size: 48,
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Error cargando usuario: $err',
+                  style: const TextStyle(color: AppColors.negative),
+                ),
+                const SizedBox(height: 24),
+                ElevatedButton(
+                  onPressed: () => context.pop(),
+                  child: const Text('VOLVER'),
+                ),
+              ],
             ),
           ),
         ),
@@ -51,65 +66,89 @@ class UserFormView extends ConsumerWidget {
   Widget _buildScaffold(BuildContext context, dynamic user) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: _buildAppBar(context),
       body: Container(
-        decoration: const BoxDecoration(gradient: AppColors.backgroundGradient),
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            return SingleChildScrollView(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [AppColors.background, AppColors.surface],
+          ),
+        ),
+        child: Column(
+          children: [
+            // Hero Header
+            Padding(
               padding: const EdgeInsets.all(24),
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  minHeight:
-                      constraints.maxHeight - 48, // 24 top + 24 bottom padding
-                ),
-                child: Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: AppColors.surface,
-                    borderRadius: BorderRadius.circular(24),
-                    border: Border.all(
-                      color: AppColors.border.withValues(alpha: 0.6),
-                      width: 1.5,
+              child: Row(
+                children: [
+                  IconButton(
+                    onPressed: () => context.pop(),
+                    icon: const Icon(Icons.arrow_back_ios_new_rounded),
+                    color: AppColors.primary,
+                    style: IconButton.styleFrom(
+                      backgroundColor: AppColors.primary.withValues(alpha: 0.1),
+                      padding: const EdgeInsets.all(12),
                     ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.2),
-                        blurRadius: 24,
-                        offset: const Offset(0, 12),
+                  ),
+                  const SizedBox(width: 24),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: AppColors.primary.withValues(alpha: 0.2),
+                      ),
+                    ),
+                    child: Icon(
+                      user == null
+                          ? Icons.person_add_rounded
+                          : Icons.manage_accounts_rounded,
+                      color: AppColors.primary,
+                      size: 28,
+                    ),
+                  ),
+                  const SizedBox(width: 20),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        user == null ? 'Nuevo Usuario' : 'Editar Usuario',
+                        style: const TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.w900,
+                          color: AppColors.textPrimary,
+                          letterSpacing: -0.5,
+                        ),
+                      ),
+                      Text(
+                        user == null
+                            ? 'Registra un nuevo integrante en el sistema'
+                            : 'Actualiza la información y permisos del usuario',
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: AppColors.textSecondary,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ],
                   ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(24),
-                    child: Padding(
-                      padding: const EdgeInsets.all(32.0),
-                      child: UserFormBody(user: user),
-                    ),
-                  ),
-                ),
+                ],
               ),
-            );
-          },
+            ),
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 64,
+                  vertical: 32,
+                ),
+                child: UserFormBody(user: user),
+              ),
+            ),
+          ],
         ),
-      ),
-    );
-  }
-
-  AppBar _buildAppBar(BuildContext context) {
-    return AppBar(
-      title: Text(
-        userId == null ? 'Nuevo Usuario' : 'Editar Usuario',
-        style: const TextStyle(
-          color: AppColors.textPrimary,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-      backgroundColor: Colors.transparent,
-      elevation: 0,
-      leading: IconButton(
-        icon: const Icon(Icons.arrow_back_rounded, color: AppColors.primary),
-        onPressed: () => context.pop(),
       ),
     );
   }

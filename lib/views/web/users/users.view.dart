@@ -14,47 +14,129 @@ class UsersView extends ConsumerWidget {
     final usersAsync = ref.watch(usersProvider);
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
-      appBar: AppBar(
-        title: const Text(
-          'Usuarios',
-          style: TextStyle(
-            color: AppColors.textPrimary,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh_rounded, color: AppColors.primary),
-            onPressed: () => ref.read(usersProvider.notifier).refresh(),
-            tooltip: 'Refrescar',
-          ),
-          const SizedBox(width: 24),
-        ],
-      ),
+      backgroundColor: AppColors.background,
       body: Container(
-        decoration: const BoxDecoration(gradient: AppColors.backgroundGradient),
-        child: usersAsync.when(
-          data: (users) => _UsersList(users: users),
-          loading: () => const Center(
-            child: CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
-            ),
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [AppColors.background, AppColors.surface],
           ),
-          error: (err, stack) => _ErrorState(error: err),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(32.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildHeader(context, ref),
+              const SizedBox(height: 32),
+              Expanded(
+                child: usersAsync.when(
+                  data: (users) => _UsersList(users: users),
+                  loading: () => const Center(
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        AppColors.primary,
+                      ),
+                    ),
+                  ),
+                  error: (err, stack) => _ErrorState(error: err),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => context.push('/users/new'),
-        backgroundColor: AppColors.primary,
-        icon: const Icon(Icons.person_add_rounded, color: Colors.white),
-        label: const Text(
-          'Nuevo Usuario',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+    );
+  }
+
+  Widget _buildHeader(BuildContext context, WidgetRef ref) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: AppColors.primary.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: AppColors.primary.withValues(alpha: 0.2),
+                ),
+              ),
+              child: const Icon(
+                Icons.people_alt_rounded,
+                color: AppColors.primary,
+                size: 32,
+              ),
+            ),
+            const SizedBox(width: 20),
+            const Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Gestión de Usuarios',
+                  style: TextStyle(
+                    fontSize: 32,
+                    fontWeight: FontWeight.w900,
+                    color: AppColors.textPrimary,
+                    letterSpacing: -0.5,
+                  ),
+                ),
+                Text(
+                  'Administra el acceso y roles de tu equipo de trabajo',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: AppColors.textSecondary,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
-      ),
+        Row(
+          children: [
+            IconButton(
+              onPressed: () => ref.read(usersProvider.notifier).refresh(),
+              icon: const Icon(Icons.refresh_rounded),
+              color: AppColors.primary,
+              tooltip: 'Refrescar Lista',
+              style: IconButton.styleFrom(
+                backgroundColor: AppColors.primary.withValues(alpha: 0.1),
+                padding: const EdgeInsets.all(12),
+              ),
+            ),
+            const SizedBox(width: 16),
+            ElevatedButton.icon(
+              onPressed: () => context.push('/users/new'),
+              icon: const Icon(Icons.person_add_rounded, size: 20),
+              label: const Text(
+                'NUEVO USUARIO',
+                style: TextStyle(fontWeight: FontWeight.w900),
+              ),
+              style:
+                  ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 20,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    elevation: 0,
+                  ).copyWith(
+                    overlayColor: WidgetStateProperty.all(
+                      Colors.white.withValues(alpha: 0.1),
+                    ),
+                  ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }
