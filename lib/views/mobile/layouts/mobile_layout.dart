@@ -130,6 +130,17 @@ class MobileLayout extends StatelessWidget {
               ),
               ListTile(
                 leading: const Icon(
+                  Icons.people_outline,
+                  color: AppColors.primary,
+                ),
+                title: const Text('Usuarios'),
+                onTap: () {
+                  context.pop();
+                  context.go('/users');
+                },
+              ),
+              ListTile(
+                leading: const Icon(
                   Icons.business_center_outlined,
                   color: AppColors.primary,
                 ),

@@ -108,6 +108,13 @@ class Sidebar extends ConsumerWidget {
             isCollapsed: isCollapsed,
           ),
           _SidebarItem(
+            icon: Icons.people_outline,
+            label: 'Usuarios',
+            isSelected: currentLocation == '/users',
+            onTap: () => context.go('/users'),
+            isCollapsed: isCollapsed,
+          ),
+          _SidebarItem(
             icon: Icons.business_center_outlined,
             label: 'Negocios',
             isSelected: currentLocation == '/businesses',

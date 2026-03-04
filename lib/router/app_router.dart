@@ -21,6 +21,9 @@ import '../views/mobile/channel/channels_mobile.view.dart'
 import '../views/mobile/business/businesses_mobile.view.dart'
     deferred as businesses_mobile
     show BusinessesMobileView;
+import '../views/mobile/users/users_mobile.view.dart'
+    deferred as users_mobile
+    show UsersMobileView;
 import '../views/mobile/roles_permissions/roles_permissions_mobile.view.dart'
     deferred as roles_permissions_mobile
     show RolesPermissionsMobileView;
@@ -33,6 +36,13 @@ import '../views/web/machine_candidates/machine_candidates.view.dart'
 import '../views/web/business/businesses.view.dart'
     deferred as businesses
     show BusinessesView;
+import '../views/web/users/users.view.dart' deferred as users show UsersView;
+import '../views/web/users/user_form.view.dart'
+    deferred as user_form
+    show UserFormView;
+import '../views/mobile/users/user_form_mobile.view.dart'
+    deferred as user_form_mobile
+    show UserFormMobileView;
 import '../views/web/garden/gardens.view.dart'
     deferred as gardens
     show GardensView;
@@ -114,6 +124,21 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 const ResponsiveMachineCandidatesWrapper(),
           ),
 
+          GoRoute(
+            path: '/users',
+            builder: (context, state) => const ResponsiveUsersWrapper(),
+          ),
+          GoRoute(
+            path: '/users/new',
+            builder: (context, state) => const ResponsiveUserFormWrapper(),
+          ),
+          GoRoute(
+            path: '/users/edit/:id',
+            builder: (context, state) {
+              final id = state.pathParameters['id'];
+              return ResponsiveUserFormWrapper(userId: id);
+            },
+          ),
           GoRoute(
             path: '/businesses',
             builder: (context, state) => const ResponsiveBusinessesWrapper(),
@@ -258,6 +283,52 @@ class ResponsiveBusinessesWrapper extends ConsumerWidget {
     return DeferredWidget(
       loader: businesses.loadLibrary,
       builder: () => businesses.BusinessesView(),
+    );
+  }
+}
+
+class ResponsiveUsersWrapper extends ConsumerWidget {
+  const ResponsiveUsersWrapper({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isMobile = ResponsiveBreakpoints.of(context).isMobile;
+    final isTablet = ResponsiveBreakpoints.of(context).isTablet;
+
+    if (isMobile || isTablet) {
+      return DeferredWidget(
+        loader: users_mobile.loadLibrary,
+        builder: () => users_mobile.UsersMobileView(),
+      );
+    }
+
+    return DeferredWidget(
+      loader: users.loadLibrary,
+      builder: () => users.UsersView(),
+    );
+  }
+}
+
+class ResponsiveUserFormWrapper extends ConsumerWidget {
+  final String? userId;
+
+  const ResponsiveUserFormWrapper({super.key, this.userId});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isMobile = ResponsiveBreakpoints.of(context).isMobile;
+    final isTablet = ResponsiveBreakpoints.of(context).isTablet;
+
+    if (isMobile || isTablet) {
+      return DeferredWidget(
+        loader: user_form_mobile.loadLibrary,
+        builder: () => user_form_mobile.UserFormMobileView(userId: userId),
+      );
+    }
+
+    return DeferredWidget(
+      loader: user_form.loadLibrary,
+      builder: () => user_form.UserFormView(userId: userId),
     );
   }
 }

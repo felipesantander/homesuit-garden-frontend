@@ -1,0 +1,105 @@
+import 'package:flutter/material.dart';
+import 'package:garden_homesuit/components/users/user_form_body.component.dart';
+import 'package:garden_homesuit/config/app_colors.dart';
+import 'package:garden_homesuit/providers/users.provider.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
+class UserFormMobileView extends ConsumerWidget {
+  final String? userId;
+
+  const UserFormMobileView({super.key, this.userId});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    if (userId != null) {
+      final usersAsync = ref.watch(usersProvider);
+
+      return usersAsync.when(
+        data: (users) {
+          final intId = int.tryParse(userId!);
+          final user = users.firstWhere(
+            (u) => u.id == intId,
+            orElse: () => throw Exception('Usuario no encontrado'),
+          );
+
+          return _buildScaffold(context, user);
+        },
+        loading: () => const Scaffold(
+          backgroundColor: AppColors.background,
+          body: Center(
+            child: CircularProgressIndicator(color: AppColors.primary),
+          ),
+        ),
+        error: (err, stack) => Scaffold(
+          backgroundColor: AppColors.background,
+          appBar: _buildAppBar(context),
+          body: Center(
+            child: Text(
+              'Error cargando usuario: $err',
+              style: const TextStyle(color: AppColors.negative),
+            ),
+          ),
+        ),
+      );
+    }
+
+    return _buildScaffold(context, null);
+  }
+
+  Widget _buildScaffold(BuildContext context, dynamic user) {
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      appBar: _buildAppBar(context),
+      body: Container(
+        decoration: const BoxDecoration(gradient: AppColors.backgroundGradient),
+        child: SingleChildScrollView(
+          padding: EdgeInsets.only(
+            left: 16,
+            right: 16,
+            top: 24,
+            bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+          ),
+          child: Container(
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(
+                color: AppColors.border.withValues(alpha: 0.6),
+                width: 1.5,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.2),
+                  blurRadius: 16,
+                  offset: const Offset(0, 8),
+                ),
+              ],
+            ),
+            padding: const EdgeInsets.all(24.0),
+            child: UserFormBody(user: user),
+          ),
+        ),
+      ),
+    );
+  }
+
+  AppBar _buildAppBar(BuildContext context) {
+    return AppBar(
+      title: Text(
+        userId == null ? 'Nuevo Usuario' : 'Editar Usuario',
+        style: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      backgroundColor: AppColors.primary,
+      elevation: 0,
+      centerTitle: false,
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+        onPressed: () => context.pop(),
+      ),
+    );
+  }
+}
