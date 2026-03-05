@@ -4,6 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:garden_homesuit/config/app_colors.dart';
 import 'package:garden_homesuit/providers/permissions.provider.dart';
 import 'package:garden_homesuit/models/permission.model.dart';
+import 'package:garden_homesuit/providers/auth.provider.dart';
 
 class PermissionList extends ConsumerWidget {
   const PermissionList({super.key});
@@ -11,13 +12,17 @@ class PermissionList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final permissionsAsync = ref.watch(permissionsProvider);
+    final authData = ref.watch(authStateProvider);
+    final authorizedComponents = authData?.components ?? [];
+    final canAdd = authorizedComponents.contains('roles_permissions_add');
 
     return Column(
       children: [
-        _buildToolbar(context),
+        _buildToolbar(context, canAdd),
         Expanded(
           child: permissionsAsync.when(
-            data: (permissions) => _buildList(context, permissions, ref),
+            data: (permissions) =>
+                _buildList(context, permissions, ref, authorizedComponents),
             loading: () => const Center(child: CircularProgressIndicator()),
             error: (error, _) => Center(child: Text('Error: $error')),
           ),
@@ -26,7 +31,7 @@ class PermissionList extends ConsumerWidget {
     );
   }
 
-  Widget _buildToolbar(BuildContext context) {
+  Widget _buildToolbar(BuildContext context, bool canAdd) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Row(
@@ -40,19 +45,23 @@ class PermissionList extends ConsumerWidget {
               color: AppColors.textPrimary,
             ),
           ),
-          ElevatedButton.icon(
-            onPressed: () => _showPermissionDialog(context, null),
-            icon: const Icon(Icons.add),
-            label: const Text('Nuevo Permiso'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+          if (canAdd)
+            ElevatedButton.icon(
+              onPressed: () => _showPermissionDialog(context, null),
+              icon: const Icon(Icons.add),
+              label: const Text('Nuevo Permiso'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
             ),
-          ),
         ],
       ),
     );
@@ -62,6 +71,7 @@ class PermissionList extends ConsumerWidget {
     BuildContext context,
     List<Permission> permissions,
     WidgetRef ref,
+    List<String> authorizedComponents,
   ) {
     if (permissions.isEmpty) {
       return const Center(
@@ -71,6 +81,9 @@ class PermissionList extends ConsumerWidget {
         ),
       );
     }
+
+    final canConfig = authorizedComponents.contains('roles_permissions_config');
+    final canDelete = authorizedComponents.contains('roles_permissions_delete');
 
     return ListView.separated(
       padding: const EdgeInsets.all(16),
@@ -101,14 +114,16 @@ class PermissionList extends ConsumerWidget {
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                IconButton(
-                  icon: const Icon(Icons.edit, color: AppColors.water),
-                  onPressed: () => _showPermissionDialog(context, auth),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.delete, color: AppColors.negative),
-                  onPressed: () => _confirmDelete(context, ref, auth),
-                ),
+                if (canConfig)
+                  IconButton(
+                    icon: const Icon(Icons.edit, color: AppColors.water),
+                    onPressed: () => _showPermissionDialog(context, auth),
+                  ),
+                if (canDelete)
+                  IconButton(
+                    icon: const Icon(Icons.delete, color: AppColors.negative),
+                    onPressed: () => _confirmDelete(context, ref, auth),
+                  ),
               ],
             ),
           ),

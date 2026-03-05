@@ -3,6 +3,7 @@ import 'package:garden_homesuit/components/users/user_card.component.dart';
 import 'package:garden_homesuit/config/app_colors.dart';
 import 'package:garden_homesuit/models/user.model.dart';
 import 'package:garden_homesuit/providers/users.provider.dart';
+import 'package:garden_homesuit/providers/auth.provider.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -109,31 +110,36 @@ class UsersView extends ConsumerWidget {
               ),
             ),
             const SizedBox(width: 16),
-            ElevatedButton.icon(
-              onPressed: () => context.push('/users/new'),
-              icon: const Icon(Icons.person_add_rounded, size: 20),
-              label: const Text(
-                'NUEVO USUARIO',
-                style: TextStyle(fontWeight: FontWeight.w900),
+            if (ref
+                    .watch(authStateProvider)
+                    ?.components
+                    .contains('users_add') ??
+                false)
+              ElevatedButton.icon(
+                onPressed: () => context.push('/users/new'),
+                icon: const Icon(Icons.person_add_rounded, size: 20),
+                label: const Text(
+                  'NUEVO USUARIO',
+                  style: TextStyle(fontWeight: FontWeight.w900),
+                ),
+                style:
+                    ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 20,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      elevation: 0,
+                    ).copyWith(
+                      overlayColor: WidgetStateProperty.all(
+                        Colors.white.withValues(alpha: 0.1),
+                      ),
+                    ),
               ),
-              style:
-                  ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 24,
-                      vertical: 20,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    elevation: 0,
-                  ).copyWith(
-                    overlayColor: WidgetStateProperty.all(
-                      Colors.white.withValues(alpha: 0.1),
-                    ),
-                  ),
-            ),
           ],
         ),
       ],

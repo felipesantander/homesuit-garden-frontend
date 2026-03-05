@@ -30,31 +30,34 @@ class MachineQuickActions extends StatelessWidget {
         spacing: 8,
         runSpacing: 8,
         children: [
-          _ActionButton(
-            icon: Icons.visibility_rounded,
-            label: 'Ver',
-            onPressed: onView ?? () {},
-            iconSize: iconSize,
-            fontSize: fontSize,
-            padding: padding,
-          ),
-          _ActionButton(
-            icon: Icons.settings_rounded,
-            label: 'Config',
-            onPressed: onConfig ?? () {},
-            iconSize: iconSize,
-            fontSize: fontSize,
-            padding: padding,
-          ),
-          _ActionButton(
-            icon: Icons.delete_outline_rounded,
-            label: 'Eliminar',
-            onPressed: onDelete ?? () {},
-            color: Colors.red,
-            iconSize: iconSize,
-            fontSize: fontSize,
-            padding: padding,
-          ),
+          if (onView != null)
+            _ActionButton(
+              icon: Icons.visibility_rounded,
+              label: 'Ver',
+              onPressed: onView!,
+              iconSize: iconSize,
+              fontSize: fontSize,
+              padding: padding,
+            ),
+          if (onConfig != null)
+            _ActionButton(
+              icon: Icons.settings_rounded,
+              label: 'Config',
+              onPressed: onConfig!,
+              iconSize: iconSize,
+              fontSize: fontSize,
+              padding: padding,
+            ),
+          if (onDelete != null)
+            _ActionButton(
+              icon: Icons.delete_outline_rounded,
+              label: 'Eliminar',
+              onPressed: onDelete!,
+              color: Colors.red,
+              iconSize: iconSize,
+              fontSize: fontSize,
+              padding: padding,
+            ),
         ],
       ),
     );

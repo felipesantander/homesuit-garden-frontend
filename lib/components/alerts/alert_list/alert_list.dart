@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:garden_homesuit/providers/auth.provider.dart';
 import '../../../../config/app_colors.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../providers/alerts.provider.dart';
@@ -178,57 +179,67 @@ class _AlertCard extends ConsumerWidget {
   }
 
   Widget _buildActions(BuildContext context, WidgetRef ref) {
+    final authData = ref.watch(authStateProvider);
+    final authorizedComponents = authData?.components ?? [];
+    final canConfig = authorizedComponents.contains('alerts_config');
+    final canDelete = authorizedComponents.contains('alerts_delete');
+
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text(
-              'ACTIVA',
-              style: TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.w900,
-                color: AppColors.textSecondary,
-                letterSpacing: 1,
+        if (canConfig) ...[
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                'ACTIVA',
+                style: TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w900,
+                  color: AppColors.textSecondary,
+                  letterSpacing: 1,
+                ),
               ),
-            ),
-            const SizedBox(height: 4),
-            Transform.scale(
-              scale: 0.8,
-              child: Switch(
-                value: alert.isActive,
-                activeTrackColor: AppColors.primary.withValues(alpha: 0.2),
-                activeColor: AppColors.primary,
-                onChanged: (val) {
-                  ref.read(alertsProvider.notifier).toggleAlert(alert.id, val);
-                },
+              const SizedBox(height: 4),
+              Transform.scale(
+                scale: 0.8,
+                child: Switch(
+                  value: alert.isActive,
+                  activeTrackColor: AppColors.primary.withValues(alpha: 0.2),
+                  activeThumbColor: AppColors.primary,
+                  onChanged: (val) {
+                    ref
+                        .read(alertsProvider.notifier)
+                        .toggleAlert(alert.id, val);
+                  },
+                ),
               ),
+            ],
+          ),
+          const SizedBox(width: 16),
+          const VerticalDivider(width: 1, indent: 10, endIndent: 10),
+          const SizedBox(width: 16),
+          IconButton(
+            icon: const Icon(
+              Icons.edit_note_rounded,
+              color: AppColors.primary,
+              size: 28,
             ),
-          ],
-        ),
-        const SizedBox(width: 16),
-        const VerticalDivider(width: 1, indent: 10, endIndent: 10),
-        const SizedBox(width: 16),
-        IconButton(
-          icon: const Icon(
-            Icons.edit_note_rounded,
-            color: AppColors.primary,
-            size: 28,
+            tooltip: 'Editar alerta',
+            onPressed: () => context.push('/alerts/edit/${alert.id}'),
           ),
-          tooltip: 'Editar alerta',
-          onPressed: () => context.push('/alerts/edit/${alert.id}'),
-        ),
-        IconButton(
-          icon: Icon(
-            Icons.delete_sweep_rounded,
-            color: Colors.red.withValues(alpha: 0.7),
-            size: 28,
+        ],
+        if (canDelete)
+          IconButton(
+            icon: Icon(
+              Icons.delete_sweep_rounded,
+              color: Colors.red.withValues(alpha: 0.7),
+              size: 28,
+            ),
+            tooltip: 'Eliminar alerta',
+            onPressed: () =>
+                ref.read(alertsProvider.notifier).deleteAlert(alert.id),
           ),
-          tooltip: 'Eliminar alerta',
-          onPressed: () =>
-              ref.read(alertsProvider.notifier).deleteAlert(alert.id),
-        ),
       ],
     );
   }

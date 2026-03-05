@@ -4,6 +4,7 @@ import 'package:garden_homesuit/models/machine.model.dart';
 import 'package:garden_homesuit/providers/data_latest.provider.dart';
 import 'package:garden_homesuit/providers/data_history.provider.dart';
 import 'package:garden_homesuit/providers/machines.provider.dart';
+import 'package:garden_homesuit/providers/auth.provider.dart';
 import 'package:intl/intl.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -169,6 +170,12 @@ class _MachineDashboardCardState extends ConsumerState<MachineDashboardCard> {
     final latestDataAsync = ref.watch(
       latestDataProvider(widget.machine.serial),
     );
+    final authData = ref.watch(authStateProvider);
+    final authorizedComponents = authData?.components ?? [];
+
+    final canSee = authorizedComponents.contains('dashboard_see_machine');
+    final canConfig = authorizedComponents.contains('dashboard_config_machine');
+    final canDelete = authorizedComponents.contains('dashboard_delete_machine');
 
     final String? lastCaptureDate =
         latestDataAsync.asData?.value.values.firstOrNull?['t'];
@@ -236,12 +243,17 @@ class _MachineDashboardCardState extends ConsumerState<MachineDashboardCard> {
                 if (_isHovered) const SizedBox(height: 12),
                 MachineQuickActions(
                   isVisible: _isHovered,
-                  onView: () =>
-                      context.push('/dashboard/machine/${widget.machine.id}'),
-                  onConfig: () => context.push(
-                    '/register-machine/${widget.machine.serial}',
-                  ),
-                  onDelete: () => _confirmDelete(context),
+                  onView: canSee
+                      ? () => context.push(
+                          '/dashboard/machine/${widget.machine.id}',
+                        )
+                      : null,
+                  onConfig: canConfig
+                      ? () => context.push(
+                          '/register-machine/${widget.machine.serial}',
+                        )
+                      : null,
+                  onDelete: canDelete ? () => _confirmDelete(context) : null,
                 ),
               ],
             ),

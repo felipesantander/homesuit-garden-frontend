@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:garden_homesuit/config/app_colors.dart';
+import 'package:garden_homesuit/providers/auth.provider.dart';
 import 'package:garden_homesuit/providers/sidebar_state.provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -11,6 +12,14 @@ class Sidebar extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final currentLocation = GoRouterState.of(context).matchedLocation;
     final isCollapsed = ref.watch(sidebarCollapsedProvider);
+    final authData = ref.watch(authStateProvider);
+    final authorizedComponents = authData?.components ?? [];
+
+    bool hasPermission(String component) {
+      if (authData == null) return false;
+      // Si la lista está vacía, el rol no tiene permisos de visualización.
+      return authorizedComponents.contains(component);
+    }
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
@@ -78,63 +87,71 @@ class Sidebar extends ConsumerWidget {
           ),
           const SizedBox(height: 32),
           // Menu Items
-          _SidebarItem(
-            icon: Icons.dashboard_outlined,
-            label: 'Dashboard',
-            isSelected:
-                currentLocation == '/dashboard' || currentLocation == '/',
-            onTap: () => context.go('/dashboard'),
-            isCollapsed: isCollapsed,
-          ),
-          _SidebarItem(
-            icon: Icons.precision_manufacturing_outlined,
-            label: 'nuevos sensores',
-            isSelected: currentLocation == '/machine-candidates',
-            onTap: () => context.go('/machine-candidates'),
-            isCollapsed: isCollapsed,
-          ),
-          _SidebarItem(
-            icon: Icons.sensors_rounded,
-            label: 'Canales',
-            isSelected: currentLocation == '/channels',
-            onTap: () => context.go('/channels'),
-            isCollapsed: isCollapsed,
-          ),
-          _SidebarItem(
-            icon: Icons.local_florist_outlined,
-            label: 'Jardines',
-            isSelected: currentLocation == '/gardens',
-            onTap: () => context.go('/gardens'),
-            isCollapsed: isCollapsed,
-          ),
-          _SidebarItem(
-            icon: Icons.people_outline,
-            label: 'Usuarios',
-            isSelected: currentLocation == '/users',
-            onTap: () => context.go('/users'),
-            isCollapsed: isCollapsed,
-          ),
-          _SidebarItem(
-            icon: Icons.business_center_outlined,
-            label: 'Negocios',
-            isSelected: currentLocation == '/businesses',
-            onTap: () => context.go('/businesses'),
-            isCollapsed: isCollapsed,
-          ),
-          _SidebarItem(
-            icon: Icons.notification_important_outlined,
-            label: 'Alertas',
-            isSelected: currentLocation == '/alerts',
-            onTap: () => context.go('/alerts'),
-            isCollapsed: isCollapsed,
-          ),
-          _SidebarItem(
-            icon: Icons.security_rounded,
-            label: 'Roles y Permisos',
-            isSelected: currentLocation == '/roles-permissions',
-            onTap: () => context.go('/roles-permissions'),
-            isCollapsed: isCollapsed,
-          ),
+          if (hasPermission('dashboard'))
+            _SidebarItem(
+              icon: Icons.dashboard_outlined,
+              label: 'Dashboard',
+              isSelected:
+                  currentLocation == '/dashboard' || currentLocation == '/',
+              onTap: () => context.go('/dashboard'),
+              isCollapsed: isCollapsed,
+            ),
+          if (hasPermission('machine_candidates'))
+            _SidebarItem(
+              icon: Icons.precision_manufacturing_outlined,
+              label: 'nuevos sensores',
+              isSelected: currentLocation == '/machine-candidates',
+              onTap: () => context.go('/machine-candidates'),
+              isCollapsed: isCollapsed,
+            ),
+          if (hasPermission('channels'))
+            _SidebarItem(
+              icon: Icons.sensors_rounded,
+              label: 'Canales',
+              isSelected: currentLocation == '/channels',
+              onTap: () => context.go('/channels'),
+              isCollapsed: isCollapsed,
+            ),
+          if (hasPermission('gardens'))
+            _SidebarItem(
+              icon: Icons.local_florist_outlined,
+              label: 'Jardines',
+              isSelected: currentLocation == '/gardens',
+              onTap: () => context.go('/gardens'),
+              isCollapsed: isCollapsed,
+            ),
+          if (hasPermission('users'))
+            _SidebarItem(
+              icon: Icons.people_outline,
+              label: 'Usuarios',
+              isSelected: currentLocation == '/users',
+              onTap: () => context.go('/users'),
+              isCollapsed: isCollapsed,
+            ),
+          if (hasPermission('businesses'))
+            _SidebarItem(
+              icon: Icons.business_center_outlined,
+              label: 'Negocios',
+              isSelected: currentLocation == '/businesses',
+              onTap: () => context.go('/businesses'),
+              isCollapsed: isCollapsed,
+            ),
+          if (hasPermission('alerts'))
+            _SidebarItem(
+              icon: Icons.notification_important_outlined,
+              label: 'Alertas',
+              isSelected: currentLocation == '/alerts',
+              onTap: () => context.go('/alerts'),
+              isCollapsed: isCollapsed,
+            ),
+          if (hasPermission('roles_permissions'))
+            _SidebarItem(
+              icon: Icons.security_rounded,
+              label: 'Roles y Permisos',
+              isSelected: currentLocation == '/roles-permissions',
+              onTap: () => context.go('/roles-permissions'),
+              isCollapsed: isCollapsed,
+            ),
           const Spacer(),
           const Divider(height: 1, color: AppColors.border),
           const SizedBox(height: 20),

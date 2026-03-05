@@ -2,15 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:garden_homesuit/config/app_colors.dart';
 import 'package:garden_homesuit/components/roles_permissions/permission_list.dart';
 import 'package:garden_homesuit/components/roles_permissions/role_list.dart';
+import 'package:garden_homesuit/providers/auth.provider.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class RolesPermissionsView extends StatefulWidget {
+class RolesPermissionsView extends ConsumerStatefulWidget {
   const RolesPermissionsView({super.key});
 
   @override
-  State<RolesPermissionsView> createState() => _RolesPermissionsViewState();
+  ConsumerState<RolesPermissionsView> createState() =>
+      _RolesPermissionsViewState();
 }
 
-class _RolesPermissionsViewState extends State<RolesPermissionsView>
+class _RolesPermissionsViewState extends ConsumerState<RolesPermissionsView>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
@@ -28,6 +31,18 @@ class _RolesPermissionsViewState extends State<RolesPermissionsView>
 
   @override
   Widget build(BuildContext context) {
+    final authData = ref.watch(authStateProvider);
+    final authorizedComponents = authData?.components ?? [];
+
+    if (!authorizedComponents.contains('roles_permissions_see')) {
+      return const Scaffold(
+        backgroundColor: Colors.transparent,
+        body: Center(
+          child: Text('No tienes permiso para ver roles y permisos'),
+        ),
+      );
+    }
+
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Column(

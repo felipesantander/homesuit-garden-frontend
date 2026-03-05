@@ -3,7 +3,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:garden_homesuit/config/app_colors.dart';
 import 'package:garden_homesuit/providers/roles.provider.dart';
 import 'package:garden_homesuit/models/role.model.dart';
-import 'package:garden_homesuit/components/roles_permissions/role_form.dart';
+import 'package:garden_homesuit/providers/auth.provider.dart';
+import 'package:go_router/go_router.dart';
 
 class RoleList extends ConsumerWidget {
   const RoleList({super.key});
@@ -11,13 +12,17 @@ class RoleList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final rolesAsync = ref.watch(rolesProvider);
+    final authData = ref.watch(authStateProvider);
+    final authorizedComponents = authData?.components ?? [];
+    final canAdd = authorizedComponents.contains('roles_permissions_add');
 
     return Column(
       children: [
-        _buildToolbar(context),
+        _buildToolbar(context, canAdd),
         Expanded(
           child: rolesAsync.when(
-            data: (roles) => _buildList(context, roles, ref),
+            data: (roles) =>
+                _buildList(context, roles, ref, authorizedComponents),
             loading: () => const Center(child: CircularProgressIndicator()),
             error: (error, _) => Center(child: Text('Error: $error')),
           ),
@@ -26,7 +31,7 @@ class RoleList extends ConsumerWidget {
     );
   }
 
-  Widget _buildToolbar(BuildContext context) {
+  Widget _buildToolbar(BuildContext context, bool canAdd) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Row(
@@ -40,25 +45,34 @@ class RoleList extends ConsumerWidget {
               color: AppColors.textPrimary,
             ),
           ),
-          ElevatedButton.icon(
-            onPressed: () => _showRoleDialog(context, null),
-            icon: const Icon(Icons.add),
-            label: const Text('Nuevo Rol'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+          if (canAdd)
+            ElevatedButton.icon(
+              onPressed: () => context.push('/roles-permissions/role/new'),
+              icon: const Icon(Icons.add),
+              label: const Text('Nuevo Rol'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
             ),
-          ),
         ],
       ),
     );
   }
 
-  Widget _buildList(BuildContext context, List<Role> roles, WidgetRef ref) {
+  Widget _buildList(
+    BuildContext context,
+    List<Role> roles,
+    WidgetRef ref,
+    List<String> authorizedComponents,
+  ) {
     if (roles.isEmpty) {
       return const Center(
         child: Text(
@@ -67,6 +81,9 @@ class RoleList extends ConsumerWidget {
         ),
       );
     }
+
+    final canConfig = authorizedComponents.contains('roles_permissions_config');
+    final canDelete = authorizedComponents.contains('roles_permissions_delete');
 
     return ListView.separated(
       padding: const EdgeInsets.all(16),
@@ -97,26 +114,22 @@ class RoleList extends ConsumerWidget {
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                IconButton(
-                  icon: const Icon(Icons.edit, color: AppColors.water),
-                  onPressed: () => _showRoleDialog(context, role),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.delete, color: AppColors.negative),
-                  onPressed: () => _confirmDelete(context, ref, role),
-                ),
+                if (canConfig)
+                  IconButton(
+                    icon: const Icon(Icons.edit, color: AppColors.water),
+                    onPressed: () =>
+                        context.push('/roles-permissions/role/${role.idRole}'),
+                  ),
+                if (canDelete)
+                  IconButton(
+                    icon: const Icon(Icons.delete, color: AppColors.negative),
+                    onPressed: () => _confirmDelete(context, ref, role),
+                  ),
               ],
             ),
           ),
         );
       },
-    );
-  }
-
-  void _showRoleDialog(BuildContext context, Role? role) {
-    showDialog(
-      context: context,
-      builder: (context) => RoleFormDialog(role: role),
     );
   }
 

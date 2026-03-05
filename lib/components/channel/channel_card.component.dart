@@ -7,6 +7,7 @@ import 'package:garden_homesuit/models/channel.model.dart';
 import 'package:garden_homesuit/providers/businesses.provider.dart';
 import 'package:garden_homesuit/providers/channels.provider.dart';
 import 'package:garden_homesuit/utils/icon_utils.dart';
+import 'package:garden_homesuit/providers/auth.provider.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class ChannelCard extends ConsumerStatefulWidget {
@@ -154,19 +155,29 @@ class _ChannelCardState extends ConsumerState<ChannelCard> {
                       ),
                       Row(
                         children: [
-                          ActionButton(
-                            icon: Icons.edit_outlined,
-                            onTap: widget.onEdit,
-                            color: AppColors.primary,
-                            tooltip: 'Editar',
-                          ),
+                          if (ref
+                                  .watch(authStateProvider)
+                                  ?.components
+                                  .contains('channels_config') ??
+                              false)
+                            ActionButton(
+                              icon: Icons.edit_outlined,
+                              onTap: widget.onEdit,
+                              color: AppColors.primary,
+                              tooltip: 'Editar',
+                            ),
                           const SizedBox(width: 8),
-                          ActionButton(
-                            icon: Icons.delete_outline_rounded,
-                            onTap: _showDeleteConfirmation,
-                            color: AppColors.negative,
-                            tooltip: 'Eliminar',
-                          ),
+                          if (ref
+                                  .watch(authStateProvider)
+                                  ?.components
+                                  .contains('channels_delete') ??
+                              false)
+                            ActionButton(
+                              icon: Icons.delete_outline_rounded,
+                              onTap: _showDeleteConfirmation,
+                              color: AppColors.negative,
+                              tooltip: 'Eliminar',
+                            ),
                         ],
                       ),
                     ],

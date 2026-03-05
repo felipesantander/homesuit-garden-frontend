@@ -11,7 +11,8 @@ import 'package:garden_homesuit/providers/gardens.provider.dart';
 import 'package:garden_homesuit/models/business.model.dart';
 import 'package:garden_homesuit/views/web/roles_permissions/permission_form/components/permission_endpoints_section.dart';
 import 'package:garden_homesuit/views/web/roles_permissions/permission_form/components/permission_entity_section.dart';
-import 'package:garden_homesuit/views/web/roles_permissions/permission_form/components/permission_string_list_section.dart';
+import 'package:garden_homesuit/views/web/roles_permissions/permission_form/components/permission_component_section.dart';
+import 'package:garden_homesuit/styles/input_styles.dart';
 
 class PermissionFormView extends ConsumerStatefulWidget {
   final String? permissionId;
@@ -177,169 +178,302 @@ class _PermissionFormViewState extends ConsumerState<PermissionFormView> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: Text(
-          _initialPermission == null ? 'Nuevo Permiso' : 'Editar Permiso',
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [AppColors.background, AppColors.surface],
+          ),
         ),
-        backgroundColor: AppColors.surface,
-        foregroundColor: AppColors.textPrimary,
-        elevation: 0,
-        actions: [
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 16.0,
-              vertical: 8.0,
-            ),
-            child: ElevatedButton.icon(
-              onPressed: _isLoading ? null : _save,
-              icon: _isLoading
-                  ? const SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(
-                        color: Colors.white,
-                        strokeWidth: 2,
+        child: Column(
+          children: [
+            // Hero Header
+            Padding(
+              padding: const EdgeInsets.all(24),
+              child: Row(
+                children: [
+                  IconButton(
+                    onPressed: () => context.pop(),
+                    icon: const Icon(Icons.arrow_back_ios_new_rounded),
+                    color: AppColors.primary,
+                    style: IconButton.styleFrom(
+                      backgroundColor: AppColors.primary.withValues(alpha: 0.1),
+                      padding: const EdgeInsets.all(12),
+                    ),
+                  ),
+                  const SizedBox(width: 24),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: AppColors.primary.withValues(alpha: 0.2),
                       ),
-                    )
-                  : const Icon(Icons.save),
-              label: const Text('Guardar'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                foregroundColor: Colors.white,
+                    ),
+                    child: Icon(
+                      _initialPermission == null
+                          ? Icons.security_rounded
+                          : Icons.lock_open_rounded,
+                      color: AppColors.primary,
+                      size: 28,
+                    ),
+                  ),
+                  const SizedBox(width: 20),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        _initialPermission == null
+                            ? 'Nuevo Permiso'
+                            : 'Editar Permiso',
+                        style: const TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.w900,
+                          color: AppColors.textPrimary,
+                          letterSpacing: -0.5,
+                        ),
+                      ),
+                      Text(
+                        _initialPermission == null
+                            ? 'Define una nueva regla de acceso para el sistema'
+                            : 'Ajusta los alcances y recursos de este permiso',
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: AppColors.textSecondary,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const Spacer(),
+                  // Top Save Button
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.primary.withValues(alpha: 0.2),
+                          blurRadius: 15,
+                          offset: const Offset(0, 8),
+                        ),
+                      ],
+                    ),
+                    child: ElevatedButton.icon(
+                      onPressed: _isLoading ? null : _save,
+                      icon: _isLoading
+                          ? const SizedBox(
+                              width: 18,
+                              height: 18,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              ),
+                            )
+                          : const Icon(Icons.save_rounded),
+                      label: const Text(
+                        'GUARDAR',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1.1,
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 18,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        elevation: 0,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-          ),
-        ],
-      ),
-      body:
-          _isLoading &&
-              _initialPermission == null &&
-              widget.permissionId != null
-          ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-              padding: const EdgeInsets.all(24.0),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Card(
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        side: BorderSide(color: AppColors.border),
+            Expanded(
+              child:
+                  _isLoading &&
+                      _initialPermission == null &&
+                      widget.permissionId != null
+                  ? const Center(child: CircularProgressIndicator())
+                  : SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 64,
+                        vertical: 32,
                       ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(24.0),
+                      child: Form(
+                        key: _formKey,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
-                              'Información General',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
+                            // General Info Section
+                            const _SectionHeader(
+                              title: 'Información General',
+                              icon: Icons.info_outline_rounded,
                             ),
-                            const SizedBox(height: 16),
+                            const SizedBox(height: 24),
                             TextFormField(
                               controller: _nameController,
-                              decoration: const InputDecoration(
+                              style: const TextStyle(
+                                color: AppColors.textPrimary,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              decoration: AppInputStyles.glass(
                                 labelText: 'Nombre del Permiso',
-                                border: OutlineInputBorder(),
-                                filled: true,
+                                prefixIcon: const Icon(
+                                  Icons.badge_outlined,
+                                  color: AppColors.primary,
+                                ),
                               ),
                               validator: (v) => v!.isEmpty ? 'Requerido' : null,
+                            ),
+                            const SizedBox(height: 24),
+                            PermissionEndpointsSection(
+                              endpoints: _endpoints,
+                              onUpdate: () => setState(() {}),
+                            ),
+                            const SizedBox(height: 24),
+                            PermissionEntitySection(
+                              dataAsync: ref.watch(businessesProvider),
+                              title: 'Negocios',
+                              icon: Icons.business_center_rounded,
+                              selectedIds: _businesses,
+                              idExtractor: (b) => b.idBusiness,
+                              nameExtractor: (b) => b.name,
+                              emptyMessage: 'No hay negocios disponibles.',
+                              onSelected: _onBusinessSelected,
+                            ),
+                            const SizedBox(height: 16),
+                            PermissionEntitySection(
+                              dataAsync: ref.watch(channelsProvider),
+                              title: 'Canales',
+                              icon: Icons.sensors,
+                              selectedIds: _channels,
+                              idExtractor: (c) => c.idChannel,
+                              nameExtractor: (c) => c.name,
+                              emptyMessage: 'No hay canales disponibles.',
+                              onSelected: (ch, selected) => setState(() {
+                                if (selected) {
+                                  if (!_channels.contains(ch.idChannel)) {
+                                    _channels.add(ch.idChannel);
+                                  }
+                                } else {
+                                  _channels.remove(ch.idChannel);
+                                }
+                              }),
+                            ),
+                            const SizedBox(height: 16),
+                            PermissionEntitySection(
+                              dataAsync: ref.watch(machinesProvider),
+                              title: 'Máquinas',
+                              icon: Icons.precision_manufacturing,
+                              selectedIds: _machines,
+                              idExtractor: (m) => m.id,
+                              nameExtractor: (m) => m.name,
+                              emptyMessage: 'No hay máquinas disponibles.',
+                              onSelected: (m, selected) => setState(() {
+                                if (selected) {
+                                  if (!_machines.contains(m.id)) {
+                                    _machines.add(m.id);
+                                  }
+                                } else {
+                                  _machines.remove(m.id);
+                                }
+                              }),
+                            ),
+                            const SizedBox(height: 16),
+                            PermissionEntitySection(
+                              dataAsync: ref.watch(gardensProvider),
+                              title: 'Jardines',
+                              icon: Icons.local_florist,
+                              selectedIds: _gardens,
+                              idExtractor: (g) => g.idGarden,
+                              nameExtractor: (g) => g.name,
+                              emptyMessage: 'No hay jardines disponibles.',
+                              onSelected: (g, selected) => setState(() {
+                                if (selected) {
+                                  if (!_gardens.contains(g.idGarden)) {
+                                    _gardens.add(g.idGarden);
+                                  }
+                                } else {
+                                  _gardens.remove(g.idGarden);
+                                }
+                              }),
+                            ),
+                            const SizedBox(height: 16),
+                            PermissionComponentSection(
+                              selectedComponents: _components,
+                              onUpdate: () => setState(() {}),
                             ),
                           ],
                         ),
                       ),
                     ),
-                    const SizedBox(height: 24),
-                    PermissionEndpointsSection(
-                      endpoints: _endpoints,
-                      onUpdate: () => setState(() {}),
-                    ),
-                    const SizedBox(height: 24),
-                    PermissionEntitySection(
-                      dataAsync: ref.watch(businessesProvider),
-                      title: 'Negocios',
-                      icon: Icons.business_center_rounded,
-                      selectedIds: _businesses,
-                      idExtractor: (b) => b.idBusiness,
-                      nameExtractor: (b) => b.name,
-                      emptyMessage: 'No hay negocios disponibles.',
-                      onSelected: _onBusinessSelected,
-                    ),
-                    const SizedBox(height: 16),
-                    PermissionEntitySection(
-                      dataAsync: ref.watch(channelsProvider),
-                      title: 'Canales',
-                      icon: Icons.sensors,
-                      selectedIds: _channels,
-                      idExtractor: (c) => c.idChannel,
-                      nameExtractor: (c) => c.name,
-                      emptyMessage: 'No hay canales disponibles.',
-                      onSelected: (ch, selected) => setState(() {
-                        if (selected) {
-                          if (!_channels.contains(ch.idChannel)) {
-                            _channels.add(ch.idChannel);
-                          }
-                        } else {
-                          _channels.remove(ch.idChannel);
-                        }
-                      }),
-                    ),
-                    const SizedBox(height: 16),
-                    PermissionEntitySection(
-                      dataAsync: ref.watch(machinesProvider),
-                      title: 'Máquinas',
-                      icon: Icons.precision_manufacturing,
-                      selectedIds: _machines,
-                      idExtractor: (m) => m.id,
-                      nameExtractor: (m) => m.name,
-                      emptyMessage: 'No hay máquinas disponibles.',
-                      onSelected: (m, selected) => setState(() {
-                        if (selected) {
-                          if (!_machines.contains(m.id)) {
-                            _machines.add(m.id);
-                          }
-                        } else {
-                          _machines.remove(m.id);
-                        }
-                      }),
-                    ),
-                    const SizedBox(height: 16),
-                    PermissionEntitySection(
-                      dataAsync: ref.watch(gardensProvider),
-                      title: 'Jardines',
-                      icon: Icons.local_florist,
-                      selectedIds: _gardens,
-                      idExtractor: (g) => g.idGarden,
-                      nameExtractor: (g) => g.name,
-                      emptyMessage: 'No hay jardines disponibles.',
-                      onSelected: (g, selected) => setState(() {
-                        if (selected) {
-                          if (!_gardens.contains(g.idGarden)) {
-                            _gardens.add(g.idGarden);
-                          }
-                        } else {
-                          _gardens.remove(g.idGarden);
-                        }
-                      }),
-                    ),
-                    const SizedBox(height: 16),
-                    PermissionStringListSection(
-                      title: 'Componentes',
-                      items: _components,
-                      icon: Icons.widgets,
-                      onUpdate: () => setState(() {}),
-                    ),
-                    const SizedBox(height: 48), // Bottom padding
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SectionHeader extends StatelessWidget {
+  final String title;
+  final IconData icon;
+
+  const _SectionHeader({required this.title, required this.icon});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: AppColors.primary.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: AppColors.primary.withValues(alpha: 0.2),
+              ),
+            ),
+            child: Icon(icon, color: AppColors.primary, size: 24),
+          ),
+          const SizedBox(width: 16),
+          Text(
+            title,
+            style: const TextStyle(
+              color: AppColors.textPrimary,
+              fontSize: 22,
+              fontWeight: FontWeight.w900,
+              letterSpacing: -0.8,
+            ),
+          ),
+          const SizedBox(width: 24),
+          Expanded(
+            child: Container(
+              height: 1,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    AppColors.border.withValues(alpha: 0.5),
+                    AppColors.border.withValues(alpha: 0.0),
                   ],
                 ),
               ),
             ),
+          ),
+        ],
+      ),
     );
   }
 }

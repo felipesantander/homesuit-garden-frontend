@@ -1,27 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:garden_homesuit/config/app_colors.dart';
+import 'package:garden_homesuit/config/app_components.dart';
 
-class PermissionEntitySection<T> extends StatelessWidget {
-  final AsyncValue<List<T>> dataAsync;
-  final String title;
-  final IconData icon;
-  final List<String> selectedIds;
-  final String Function(T) idExtractor;
-  final String Function(T) nameExtractor;
-  final void Function(T, bool) onSelected;
-  final String emptyMessage;
+class PermissionComponentSection extends StatelessWidget {
+  final List<String> selectedComponents;
+  final VoidCallback onUpdate;
 
-  const PermissionEntitySection({
+  const PermissionComponentSection({
     super.key,
-    required this.dataAsync,
-    required this.title,
-    required this.icon,
-    required this.selectedIds,
-    required this.idExtractor,
-    required this.nameExtractor,
-    required this.onSelected,
-    required this.emptyMessage,
+    required this.selectedComponents,
+    required this.onUpdate,
   });
 
   @override
@@ -29,45 +17,48 @@ class PermissionEntitySection<T> extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _SectionHeader(title: title, icon: icon),
-        const SizedBox(height: 16),
-        dataAsync.when(
-          data: (items) {
-            if (items.isEmpty) {
-              return Container(
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: AppColors.surface.withValues(alpha: 0.3),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: AppColors.border.withValues(alpha: 0.4),
-                  ),
-                ),
-                child: Text(
-                  emptyMessage,
-                  style: const TextStyle(color: AppColors.textSecondary),
-                ),
-              );
-            }
-            return Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: AppColors.surface.withValues(alpha: 0.3),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color: AppColors.border.withValues(alpha: 0.4),
+        const _SectionHeader(
+          title: 'Componentes de Vista',
+          icon: Icons.widgets_rounded,
+        ),
+        const SizedBox(height: 24),
+        Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: AppColors.surface.withValues(alpha: 0.3),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: AppColors.border.withValues(alpha: 0.4)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Text(
+                'Selecciona los componentes a los que este permiso da acceso:',
+                style: TextStyle(
+                  color: AppColors.textSecondary,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
-              child: Wrap(
+              const SizedBox(height: 24),
+              Wrap(
                 spacing: 12,
                 runSpacing: 12,
-                children: items.map((item) {
-                  final id = idExtractor(item);
-                  final isSelected = selectedIds.contains(id);
+                children: AppComponents.viewComponents.map((component) {
+                  final isSelected = selectedComponents.contains(component);
                   return FilterChip(
-                    label: Text(nameExtractor(item)),
+                    label: Text(AppComponents.getDisplayName(component)),
                     selected: isSelected,
-                    onSelected: (selected) => onSelected(item, selected),
+                    onSelected: (selected) {
+                      if (selected) {
+                        if (!selectedComponents.contains(component)) {
+                          selectedComponents.add(component);
+                        }
+                      } else {
+                        selectedComponents.remove(component);
+                      }
+                      onUpdate();
+                    },
                     side: BorderSide(
                       color: isSelected
                           ? AppColors.primary.withValues(alpha: 0.5)
@@ -94,22 +85,7 @@ class PermissionEntitySection<T> extends StatelessWidget {
                   );
                 }).toList(),
               ),
-            );
-          },
-          loading: () => const Center(
-            child: Padding(
-              padding: EdgeInsets.all(32.0),
-              child: CircularProgressIndicator(),
-            ),
-          ),
-          error: (e, _) => Center(
-            child: Padding(
-              padding: const EdgeInsets.all(32.0),
-              child: Text(
-                'Error: $e',
-                style: const TextStyle(color: AppColors.negative),
-              ),
-            ),
+            ],
           ),
         ),
       ],

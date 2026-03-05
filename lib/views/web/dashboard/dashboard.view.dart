@@ -19,6 +19,11 @@ class DashboardView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final machinesAsync = ref.watch(machinesProvider);
+    final authData = ref.watch(authStateProvider);
+    final authorizedComponents = authData?.components ?? [];
+    final canAddMachine = authorizedComponents.contains(
+      'dashboard_add_machine',
+    );
 
     return Container(
       decoration: const BoxDecoration(gradient: AppColors.backgroundGradient),
@@ -76,32 +81,35 @@ class DashboardView extends ConsumerWidget {
                   ),
                   Row(
                     children: [
-                      ElevatedButton.icon(
-                        onPressed: () => context.push('/dashboard/add-sensor'),
-                        icon: const Icon(Icons.add_task_rounded, size: 20),
-                        label: const Text(
-                          'NUEVO SENSOR',
-                          style: TextStyle(fontWeight: FontWeight.w900),
+                      if (canAddMachine) ...[
+                        ElevatedButton.icon(
+                          onPressed: () =>
+                              context.push('/dashboard/add-sensor'),
+                          icon: const Icon(Icons.add_task_rounded, size: 20),
+                          label: const Text(
+                            'NUEVO SENSOR',
+                            style: TextStyle(fontWeight: FontWeight.w900),
+                          ),
+                          style:
+                              ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.primary,
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 24,
+                                  vertical: 20,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                elevation: 0,
+                              ).copyWith(
+                                overlayColor: WidgetStateProperty.all(
+                                  Colors.white.withValues(alpha: 0.1),
+                                ),
+                              ),
                         ),
-                        style:
-                            ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.primary,
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 24,
-                                vertical: 20,
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              elevation: 0,
-                            ).copyWith(
-                              overlayColor: WidgetStateProperty.all(
-                                Colors.white.withValues(alpha: 0.1),
-                              ),
-                            ),
-                      ),
-                      const SizedBox(width: 16),
+                        const SizedBox(width: 16),
+                      ],
                       IconButton(
                         icon: const Icon(Icons.refresh_rounded),
                         color: AppColors.primary,

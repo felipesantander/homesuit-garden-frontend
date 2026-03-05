@@ -6,6 +6,7 @@ import 'package:garden_homesuit/models/garden.model.dart';
 import 'package:garden_homesuit/providers/businesses.provider.dart';
 import 'package:garden_homesuit/providers/gardens.provider.dart';
 import 'package:garden_homesuit/providers/machines.provider.dart';
+import 'package:garden_homesuit/providers/auth.provider.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'dart:ui';
 
@@ -195,35 +196,50 @@ class _GardenCardState extends ConsumerState<GardenCard> {
                       ),
                       Row(
                         children: [
-                          ActionButton(
-                            icon: Icons.insights_rounded,
-                            onTap: () {
-                              // Action to view graphs (Quick Access)
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text(
-                                    'Abriendo gráficas detalladas...',
+                          if (ref
+                                  .watch(authStateProvider)
+                                  ?.components
+                                  .contains('gardens_see') ??
+                              false)
+                            ActionButton(
+                              icon: Icons.insights_rounded,
+                              onTap: () {
+                                // Action to view graphs (Quick Access)
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'Abriendo gráficas detalladas...',
+                                    ),
                                   ),
-                                ),
-                              );
-                            },
-                            color: AppColors.secondary,
-                            tooltip: 'Ver Métricas',
-                          ),
+                                );
+                              },
+                              color: AppColors.secondary,
+                              tooltip: 'Ver Métricas',
+                            ),
                           const SizedBox(width: 4),
-                          ActionButton(
-                            icon: Icons.edit_outlined,
-                            onTap: widget.onEdit,
-                            color: AppColors.primary,
-                            tooltip: 'Editar',
-                          ),
+                          if (ref
+                                  .watch(authStateProvider)
+                                  ?.components
+                                  .contains('gardens_config') ??
+                              false)
+                            ActionButton(
+                              icon: Icons.edit_outlined,
+                              onTap: widget.onEdit,
+                              color: AppColors.primary,
+                              tooltip: 'Editar',
+                            ),
                           const SizedBox(width: 4),
-                          ActionButton(
-                            icon: Icons.delete_outline_rounded,
-                            onTap: _showDeleteConfirmation,
-                            color: AppColors.negative,
-                            tooltip: 'Eliminar',
-                          ),
+                          if (ref
+                                  .watch(authStateProvider)
+                                  ?.components
+                                  .contains('gardens_delete') ??
+                              false)
+                            ActionButton(
+                              icon: Icons.delete_outline_rounded,
+                              onTap: _showDeleteConfirmation,
+                              color: AppColors.negative,
+                              tooltip: 'Eliminar',
+                            ),
                         ],
                       ),
                     ],

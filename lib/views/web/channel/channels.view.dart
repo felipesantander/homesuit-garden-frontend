@@ -5,6 +5,7 @@ import 'package:garden_homesuit/config/app_colors.dart';
 import 'package:garden_homesuit/models/business.model.dart';
 import 'package:garden_homesuit/models/channel.model.dart';
 import 'package:garden_homesuit/providers/channels.provider.dart';
+import 'package:garden_homesuit/providers/auth.provider.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:garden_homesuit/components/common/business_filter.component.dart';
@@ -19,6 +20,14 @@ class ChannelsView extends ConsumerWidget {
     final channelsAsync = ref.watch(channelsProvider);
     final selectedBusinessIds = ref.watch(channelBusinessFilterProvider);
     final businessesAsync = ref.watch(businessesProvider);
+    final authData = ref.watch(authStateProvider);
+    final authorizedComponents = authData?.components ?? [];
+
+    if (!authorizedComponents.contains('channels_see')) {
+      return const Center(child: Text('No tienes permiso para ver canales'));
+    }
+
+    final canAdd = authorizedComponents.contains('channels_add');
 
     return Container(
       decoration: const BoxDecoration(gradient: AppColors.backgroundGradient),
@@ -26,7 +35,7 @@ class ChannelsView extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _Header(
-            onAdd: () => _showFormDialog(context),
+            onAdd: canAdd ? () => _showFormDialog(context) : null,
             onRefresh: () => ref.read(channelsProvider.notifier).refresh(),
             selectedBusinessIds: selectedBusinessIds,
             onFilterApplied: (ids) =>
@@ -85,7 +94,7 @@ class ChannelsView extends ConsumerWidget {
 }
 
 class _Header extends StatelessWidget {
-  final VoidCallback onAdd;
+  final VoidCallback? onAdd;
   final VoidCallback onRefresh;
   final Set<String> selectedBusinessIds;
   final Function(Set<String>) onFilterApplied;
@@ -168,31 +177,32 @@ class _Header extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 16),
-              ElevatedButton.icon(
-                onPressed: onAdd,
-                icon: const Icon(Icons.add_task_rounded, size: 20),
-                label: const Text(
-                  'NUEVO CANAL',
-                  style: TextStyle(fontWeight: FontWeight.w900),
+              if (onAdd != null)
+                ElevatedButton.icon(
+                  onPressed: onAdd,
+                  icon: const Icon(Icons.add_task_rounded, size: 20),
+                  label: const Text(
+                    'NUEVO CANAL',
+                    style: TextStyle(fontWeight: FontWeight.w900),
+                  ),
+                  style:
+                      ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 20,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        elevation: 0,
+                      ).copyWith(
+                        overlayColor: WidgetStateProperty.all(
+                          Colors.white.withValues(alpha: 0.1),
+                        ),
+                      ),
                 ),
-                style:
-                    ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 20,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      elevation: 0,
-                    ).copyWith(
-                      overlayColor: WidgetStateProperty.all(
-                        Colors.white.withValues(alpha: 0.1),
-                      ),
-                    ),
-              ),
             ],
           ),
         ],

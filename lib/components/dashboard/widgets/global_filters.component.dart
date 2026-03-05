@@ -5,6 +5,7 @@ import 'package:garden_homesuit/config/app_colors.dart';
 import 'package:garden_homesuit/providers/businesses.provider.dart';
 import 'package:garden_homesuit/providers/gardens.provider.dart';
 import 'package:garden_homesuit/providers/dashboard_filters.provider.dart';
+import 'package:garden_homesuit/providers/auth.provider.dart';
 
 class GlobalFiltersComponent extends HookConsumerWidget {
   const GlobalFiltersComponent({super.key});
@@ -30,53 +31,69 @@ class GlobalFiltersComponent extends HookConsumerWidget {
     final businessesAsync = ref.watch(businessesProvider);
     final gardensAsync = ref.watch(gardensProvider);
 
+    // Permissions
+    final authData = ref.watch(authStateProvider);
+    final authorizedComponents = authData?.components ?? [];
+    final canFilterByBusiness = authorizedComponents.contains(
+      'dashboard_filter_by_business',
+    );
+    final canFilterByGarden = authorizedComponents.contains(
+      'dashboard_filter_by_garden',
+    );
+
+    if (!canFilterByBusiness && !canFilterByGarden) {
+      return const SizedBox.shrink();
+    }
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         // Business Filter
-        businessesAsync.when(
-          data: (businesses) => _buildFilterMenu(
-            label: 'Empresas',
-            icon: Icons.business_center_rounded,
-            color: AppColors.primary,
-            items: businesses
-                .map((b) => _FilterItem(id: b.idBusiness, name: b.name))
-                .toList(),
-            selectedIds: pendingBusinessIds.value,
-            onChanged: (newSet) => pendingBusinessIds.value = newSet,
+        if (canFilterByBusiness)
+          businessesAsync.when(
+            data: (businesses) => _buildFilterMenu(
+              label: 'Empresas',
+              icon: Icons.business_center_rounded,
+              color: AppColors.primary,
+              items: businesses
+                  .map((b) => _FilterItem(id: b.idBusiness, name: b.name))
+                  .toList(),
+              selectedIds: pendingBusinessIds.value,
+              onChanged: (newSet) => pendingBusinessIds.value = newSet,
+            ),
+            loading: () => const _LoadingPlaceholder(),
+            error: (error, stack) => const SizedBox(),
           ),
-          loading: () => const _LoadingPlaceholder(),
-          error: (error, stack) => const SizedBox(),
-        ),
 
-        const SizedBox(width: 12),
+        if (canFilterByBusiness && canFilterByGarden) const SizedBox(width: 12),
 
         // Garden Filter
-        gardensAsync.when(
-          data: (gardens) {
-            // Optional: Filter gardens by selected businesses in context
-            final filteredGardens = pendingBusinessIds.value.isEmpty
-                ? gardens
-                : gardens
-                      .where(
-                        (g) => pendingBusinessIds.value.contains(g.business),
-                      )
-                      .toList();
+        if (canFilterByGarden)
+          gardensAsync.when(
+            data: (gardens) {
+              // Optional: Filter gardens by selected businesses in context
+              final filteredGardens = pendingBusinessIds.value.isEmpty
+                  ? gardens
+                  : gardens
+                        .where(
+                          (g) => pendingBusinessIds.value.contains(g.business),
+                        )
+                        .toList();
 
-            return _buildFilterMenu(
-              label: 'Jardines',
-              icon: Icons.eco_rounded,
-              color: AppColors.water,
-              items: filteredGardens
-                  .map((g) => _FilterItem(id: g.idGarden, name: g.name))
-                  .toList(),
-              selectedIds: pendingGardenIds.value,
-              onChanged: (newSet) => pendingGardenIds.value = newSet,
-            );
-          },
-          loading: () => const _LoadingPlaceholder(),
-          error: (error, stack) => const SizedBox(),
-        ),
+              return _buildFilterMenu(
+                label: 'Jardines',
+                icon: Icons.eco_rounded,
+                color: AppColors.water,
+                items: filteredGardens
+                    .map((g) => _FilterItem(id: g.idGarden, name: g.name))
+                    .toList(),
+                selectedIds: pendingGardenIds.value,
+                onChanged: (newSet) => pendingGardenIds.value = newSet,
+              );
+            },
+            loading: () => const _LoadingPlaceholder(),
+            error: (error, stack) => const SizedBox(),
+          ),
 
         const SizedBox(width: 24),
 

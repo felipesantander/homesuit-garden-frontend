@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:garden_homesuit/providers/auth.provider.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../../config/app_colors.dart';
 import '../../../components/alerts/alert_list/alert_list.dart';
@@ -34,6 +35,18 @@ class _AlertsViewState extends ConsumerState<AlertsView>
 
   @override
   Widget build(BuildContext context) {
+    final authData = ref.watch(authStateProvider);
+    final authorizedComponents = authData?.components ?? [];
+
+    if (!authorizedComponents.contains('alerts_see')) {
+      return const Scaffold(
+        backgroundColor: AppColors.background,
+        body: Center(child: Text('No tienes permiso para ver alertas')),
+      );
+    }
+
+    final canAdd = authorizedComponents.contains('alerts_add');
+
     return Scaffold(
       backgroundColor: AppColors.background,
       body: Container(
@@ -49,7 +62,7 @@ class _AlertsViewState extends ConsumerState<AlertsView>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildHeader(),
+              _buildHeader(canAdd),
               const SizedBox(height: 40),
               _buildTabBar(),
               const SizedBox(height: 32),
@@ -66,7 +79,7 @@ class _AlertsViewState extends ConsumerState<AlertsView>
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(bool canAdd) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -120,7 +133,7 @@ class _AlertsViewState extends ConsumerState<AlertsView>
             ],
           ),
         ),
-        _buildCreateButton(),
+        if (canAdd) _buildCreateButton(),
       ],
     );
   }

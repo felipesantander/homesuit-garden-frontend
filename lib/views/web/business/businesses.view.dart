@@ -4,6 +4,7 @@ import 'package:garden_homesuit/components/business/business_form.component.dart
 import 'package:garden_homesuit/config/app_colors.dart';
 import 'package:garden_homesuit/models/business.model.dart';
 import 'package:garden_homesuit/providers/businesses.provider.dart';
+import 'package:garden_homesuit/providers/auth.provider.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class BusinessesView extends ConsumerWidget {
@@ -12,6 +13,14 @@ class BusinessesView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final businessesAsync = ref.watch(businessesProvider);
+    final authData = ref.watch(authStateProvider);
+    final authorizedComponents = authData?.components ?? [];
+
+    if (!authorizedComponents.contains('businesses_see')) {
+      return const Center(child: Text('No tienes permiso para ver negocios'));
+    }
+
+    final canAdd = authorizedComponents.contains('businesses_add');
 
     return Container(
       decoration: const BoxDecoration(gradient: AppColors.backgroundGradient),
@@ -19,7 +28,7 @@ class BusinessesView extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _Header(
-            onAdd: () => _showFormDialog(context),
+            onAdd: canAdd ? () => _showFormDialog(context) : null,
             onRefresh: () => ref.read(businessesProvider.notifier).refresh(),
           ),
           Expanded(
@@ -64,7 +73,7 @@ class BusinessesView extends ConsumerWidget {
 }
 
 class _Header extends StatelessWidget {
-  final VoidCallback onAdd;
+  final VoidCallback? onAdd;
   final VoidCallback onRefresh;
 
   const _Header({required this.onAdd, required this.onRefresh});
@@ -131,31 +140,32 @@ class _Header extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 16),
-              ElevatedButton.icon(
-                onPressed: onAdd,
-                icon: const Icon(Icons.add_rounded, size: 20),
-                label: const Text(
-                  'NUEVO NEGOCIO',
-                  style: TextStyle(fontWeight: FontWeight.w900),
+              if (onAdd != null)
+                ElevatedButton.icon(
+                  onPressed: onAdd,
+                  icon: const Icon(Icons.add_rounded, size: 20),
+                  label: const Text(
+                    'NUEVO NEGOCIO',
+                    style: TextStyle(fontWeight: FontWeight.w900),
+                  ),
+                  style:
+                      ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 20,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        elevation: 0,
+                      ).copyWith(
+                        overlayColor: WidgetStateProperty.all(
+                          Colors.white.withValues(alpha: 0.1),
+                        ),
+                      ),
                 ),
-                style:
-                    ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 20,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      elevation: 0,
-                    ).copyWith(
-                      overlayColor: WidgetStateProperty.all(
-                        Colors.white.withValues(alpha: 0.1),
-                      ),
-                    ),
-              ),
             ],
           ),
         ],

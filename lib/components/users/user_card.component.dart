@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:garden_homesuit/config/app_colors.dart';
 import 'package:garden_homesuit/models/user.model.dart';
+import 'package:garden_homesuit/providers/auth.provider.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class UserCard extends ConsumerWidget {
@@ -46,7 +47,7 @@ class UserCard extends ConsumerWidget {
                     _buildAvatar(),
                     const SizedBox(width: 20),
                     _buildUserInfo(),
-                    _buildActions(),
+                    _buildActions(ref),
                   ],
                 ),
               ),
@@ -187,29 +188,39 @@ class UserCard extends ConsumerWidget {
     );
   }
 
-  Widget _buildActions() {
+  Widget _buildActions(WidgetRef ref) {
+    final authData = ref.watch(authStateProvider);
+    final authorizedComponents = authData?.components ?? [];
+    final canConfig = authorizedComponents.contains('users_config');
+    final canDelete = authorizedComponents.contains('users_delete');
+
+    if (!canConfig && !canDelete) return const SizedBox.shrink();
+
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        IconButton.filled(
-          onPressed: onEdit,
-          icon: const Icon(Icons.edit_note_rounded, size: 24),
-          style: IconButton.styleFrom(
-            backgroundColor: AppColors.primary.withValues(alpha: 0.1),
-            foregroundColor: AppColors.primary,
+        if (canConfig) ...[
+          IconButton.filled(
+            onPressed: onEdit,
+            icon: const Icon(Icons.edit_note_rounded, size: 24),
+            style: IconButton.styleFrom(
+              backgroundColor: AppColors.primary.withValues(alpha: 0.1),
+              foregroundColor: AppColors.primary,
+            ),
+            tooltip: 'Editar Usuario',
           ),
-          tooltip: 'Editar Usuario',
-        ),
-        const SizedBox(width: 12),
-        IconButton.filled(
-          onPressed: onDelete,
-          icon: const Icon(Icons.delete_sweep_rounded, size: 24),
-          style: IconButton.styleFrom(
-            backgroundColor: Colors.red.withValues(alpha: 0.1),
-            foregroundColor: Colors.redAccent,
+          if (canDelete) const SizedBox(width: 12),
+        ],
+        if (canDelete)
+          IconButton.filled(
+            onPressed: onDelete,
+            icon: const Icon(Icons.delete_sweep_rounded, size: 24),
+            style: IconButton.styleFrom(
+              backgroundColor: Colors.red.withValues(alpha: 0.1),
+              foregroundColor: Colors.redAccent,
+            ),
+            tooltip: 'Eliminar Usuario',
           ),
-          tooltip: 'Eliminar Usuario',
-        ),
       ],
     );
   }

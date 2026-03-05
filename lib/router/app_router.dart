@@ -58,6 +58,9 @@ import '../views/web/roles_permissions/roles_permissions.view.dart'
 import '../views/web/roles_permissions/permission_form/permission_form.view.dart'
     deferred as permission_form
     show PermissionFormView;
+import '../views/web/roles_permissions/role_form/role_form.view.dart'
+    deferred as role_form
+    show RoleFormView;
 import '../views/web/dashboard/add_sensor/add_sensor.view.dart'
     deferred as add_sensor
     show AddSensorView;
@@ -185,6 +188,23 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 loader: permission_form.loadLibrary,
                 builder: () =>
                     permission_form.PermissionFormView(permissionId: id),
+              );
+            },
+          ),
+          GoRoute(
+            path: '/roles-permissions/role/new',
+            builder: (context, state) => DeferredWidget(
+              loader: role_form.loadLibrary,
+              builder: () => role_form.RoleFormView(),
+            ),
+          ),
+          GoRoute(
+            path: '/roles-permissions/role/:id',
+            builder: (context, state) {
+              final id = state.pathParameters['id'];
+              return DeferredWidget(
+                loader: role_form.loadLibrary,
+                builder: () => role_form.RoleFormView(roleId: id),
               );
             },
           ),
